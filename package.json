@@ -1,6 +1,6 @@
 {
   "name": "yes-kafka",
-  "description": "Apache Kafka 0.9 client for Node.JS",
+  "description": "Apache Kafka 0.9 client",
   "homepage": "https://github.com/mnorkin/yes-kafka",
   "author": {
     "name": "Oleksiy Krivoshey",
@@ -12,7 +12,7 @@
       "email": "maksimn@wix.com"
     }
   ],
-  "version": "3.3.5",
+  "version": "1.0.0",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "keywords": [
