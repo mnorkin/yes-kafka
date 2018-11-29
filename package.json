@@ -1,11 +1,17 @@
 {
-  "name": "no-kafka",
+  "name": "yes-kafka",
   "description": "Apache Kafka 0.9 client for Node.JS",
-  "homepage": "http://github.com/oleksiyk/kafka",
+  "homepage": "https://github.com/mnorkin/yes-kafka",
   "author": {
     "name": "Oleksiy Krivoshey",
     "email": "oleksiyk@gmail.com"
   },
+  "contributors": [
+    {
+      "name": "Maksim Norkin",
+      "email": "maksimn@wix.com"
+    }
+  ],
   "version": "3.3.5",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
@@ -38,7 +44,7 @@
     "snappy": "^5.0.0"
   },
   "bugs": {
-    "url": "https://github.com/oleksiyk/kafka/issues"
+    "url": "https://github.com/mnorkin/yes-kafka/issues"
   },
   "scripts": {
     "coverage": "istanbul check-coverage --statement 85 --branch 70 --function 85",
@@ -49,7 +55,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oleksiyk/kafka.git"
+    "url": "https://github.com/mnorkin/yes-kafka.git"
   },
   "readmeFilename": "README.md",
   "license": "MIT"

@@ -1,18 +1,12 @@
-[![Build Status][badge-travis]][travis]
-[![Test Coverage][badge-coverage]][coverage]
-[![david Dependencies][badge-david-deps]][david-deps]
-[![david Dev Dependencies][badge-david-dev-deps]][david-dev-deps]
-[![license][badge-license]][license]
+# yes-kafka
 
-# no-kafka
+__yes-kafka__ is [Apache Kafka](https://kafka.apache.org) 0.9 client for Node.js with [new unified consumer API](#groupconsumer-new-unified-consumer-api) support.
 
-__no-kafka__ is [Apache Kafka](https://kafka.apache.org) 0.9 client for Node.js with [new unified consumer API](#groupconsumer-new-unified-consumer-api) support.
+This is a fork of https://github.com/oleksiyk/kafka and supports high volume of topics
 
 Supports sync and async Gzip and Snappy compression, producer batching and controllable retries, offers few predefined group assignment strategies and producer partitioner option.
 
 All methods will return a [promise](https://github.com/petkaantonov/bluebird)
-
-__Please check a [CHANGELOG](CHANGELOG.md) for backward incompatible changes in version 3.x__
 
 * [Using](#using)
 * [Producer](#producer)
@@ -36,10 +30,10 @@ __Please check a [CHANGELOG](CHANGELOG.md) for backward incompatible changes in 
 
 ## Using
 
-* install __no-kafka__
+* install __yes-kafka__
 
 ```shell
-npm install no-kafka
+npm install yes-kafka
 ```
 
 
@@ -48,7 +42,7 @@ npm install no-kafka
 Example:
 
 ```javascript
-var Kafka = require('no-kafka');
+var Kafka = require('yes-kafka');
 var producer = new Kafka.Producer();
 
 return producer.init().then(function(){
@@ -142,7 +136,7 @@ Example: override the default partitioner with a custom partitioner that only us
 
 ```javascript
 var util  = require('util');
-var Kafka = require('no-kafka');
+var Kafka = require('yes-kafka');
 
 var Producer           = Kafka.Producer;
 var DefaultPartitioner = Kafka.DefaultPartitioner;
@@ -175,7 +169,7 @@ return producer.init().then(function(){
 ### Producer options:
 * `requiredAcks` - require acknoledgments for produce request. If it is 0 the server will not send any response.  If it is 1 (default), the server will wait the data is written to the local log before sending a response. If it is -1 the server will block until the message is committed by all in sync replicas before sending a response. For any number > 1 the server will block waiting for this number of acknowledgements to occur (but the server will never wait for more acknowledgements than there are in-sync replicas).
 * `timeout` - timeout in ms for produce request
-* `clientId` - ID of this client, defaults to 'no-kafka-client'
+* `clientId` - ID of this client, defaults to 'yes-kafka-client'
 * `connectionString` - comma delimited list of initial brokers list, defaults to '127.0.0.1:9092'
 * `reconnectionDelay` - controls optionally progressive delay between reconnection attempts in case of network error:
   * `min` - minimum delay, used as increment value for next attempts, defaults to 1000ms
@@ -281,12 +275,12 @@ consumer.fetchOffset([
 ```
 
 ### SimpleConsumer options
-* `groupId` - group ID for comitting and fetching offsets. Defaults to 'no-kafka-group-v0'
+* `groupId` - group ID for comitting and fetching offsets. Defaults to 'yes-kafka-group-v0'
 * `maxWaitTime` - maximum amount of time in milliseconds to block waiting if insufficient data is available at the time the fetch request is issued, defaults to 100ms
 * `idleTimeout` - timeout between fetch calls, defaults to 1000ms
 * `minBytes` - minimum number of bytes to wait from Kafka before returning the fetch call, defaults to 1 byte
 * `maxBytes` - maximum size of messages in a fetch response, defaults to 1MB
-* `clientId` - ID of this client, defaults to 'no-kafka-client'
+* `clientId` - ID of this client, defaults to 'yes-kafka-client'
 * `connectionString` - comma delimited list of initial brokers list, defaults to '127.0.0.1:9092'
 * `reconnectionDelay` - controls optionally progressive delay between reconnection attempts in case of network error:
   * `min` - minimum delay, used as increment value for next attempts, defaults to 1000ms
@@ -299,7 +293,7 @@ consumer.fetchOffset([
 
 ## GroupConsumer (new unified consumer API)
 
-Specify an assignment strategy (or use __no-kafka__ built-in consistent or round robin assignment strategy) and subscribe by specifying only topics. Elected group leader will automatically assign partitions between all group members.
+Specify an assignment strategy (or use __yes-kafka__ built-in consistent or round robin assignment strategy) and subscribe by specifying only topics. Elected group leader will automatically assign partitions between all group members.
 
 Example:
 
@@ -325,7 +319,7 @@ consumer.init(strategies); // all done, now wait for messages in dataHandler
 
 ### Assignment strategies
 
-__no-kafka__ provides three built-in strategies:
+__yes-kafka__ provides three built-in strategies:
 * `Kafka.WeightedRoundRobinAssignmentStrategy` weighted round robin assignment (based on [wrr-pool](https://github.com/oleksiyk/wrr-pool)).
 * `Kafka.ConsistentAssignmentStrategy` which is based on a consistent [hash ring](https://github.com/3rd-Eden/node-hashring) and so provides consistent assignment across consumers in a group based on supplied `metadata.id` and `metadata.weight` options.
 * `Kafka.DefaultAssignmentStrategy` simple round robin assignment strategy (default).
@@ -364,12 +358,12 @@ You can also write your own assignment strategy by inheriting from Kafka.Default
 
 ### GroupConsumer options
 
-* `groupId` - group ID for comitting and fetching offsets. Defaults to 'no-kafka-group-v0.9'
+* `groupId` - group ID for comitting and fetching offsets. Defaults to 'yes-kafka-group-v0.9'
 * `maxWaitTime` - maximum amount of time in milliseconds to block waiting if insufficient data is available at the time the fetch request is issued, defaults to 100ms
 * `idleTimeout` - timeout between fetch calls, defaults to 1000ms
 * `minBytes` - minimum number of bytes to wait from Kafka before returning the fetch call, defaults to 1 byte
 * `maxBytes` - maximum size of messages in a fetch response
-* `clientId` - ID of this client, defaults to 'no-kafka-client'
+* `clientId` - ID of this client, defaults to 'yes-kafka-client'
 * `connectionString` - comma delimited list of initial brokers list, defaults to '127.0.0.1:9092'
 * `reconnectionDelay` - controls optionally progressive delay between reconnection attempts in case of network error:
   * `min` - minimum delay, used as increment value for next attempts, defaults to 1000ms
@@ -399,11 +393,11 @@ var admin = new Kafka.GroupAdmin();
 
 return admin.init().then(function(){
     return admin.listGroups().then(function(groups){
-        // [ { groupId: 'no-kafka-admin-test-group', protocolType: 'consumer' } ]
-        return admin.describeGroup('no-kafka-admin-test-group').then(function(group){
+        // [ { groupId: 'yes-kafka-admin-test-group', protocolType: 'consumer' } ]
+        return admin.describeGroup('yes-kafka-admin-test-group').then(function(group){
             /*
             { error: null,
-              groupId: 'no-kafka-admin-test-group',
+              groupId: 'yes-kafka-admin-test-group',
               state: 'Stable',
               protocolType: 'consumer',
               protocol: 'DefaultAssignmentStrategy',
@@ -434,7 +428,7 @@ fetchConsumerLag:
 var admin = new Kafka.GroupAdmin();
 
 return admin.init().then(function(){
-    return admin.fetchConsumerLag('no-kafka-admin-test-group', [{
+    return admin.fetchConsumerLag('yes-kafka-admin-test-group', [{
         topicName: 'kafka-test-topic',
         partitions: [0, 1, 2]
     }]).then(function (consumerLag) {
@@ -463,12 +457,12 @@ Note that group consumer has to commit offsets first, in order for consumerLag t
 
 ## Compression
 
-__no-kafka__ supports both SNAPPY and Gzip compression. To use SNAPPY you must install the `snappy` NPM module in your project.
+__yes-kafka__ supports both SNAPPY and Gzip compression. To use SNAPPY you must install the `snappy` NPM module in your project.
 
 Enable compression in Producer:
 
 ```javascript
-var Kafka = require('no-kafka');
+var Kafka = require('yes-kafka');
 
 var producer = new Kafka.Producer({
     clientId: 'producer',
@@ -486,7 +480,7 @@ return producer.send({
 }, { codec: Kafka.COMPRESSION_SNAPPY })
 ```
 
-By default __no-kafka__ will use asynchronous compression and decompression.
+By default __yes-kafka__ will use asynchronous compression and decompression.
 Disable async compression/decompression (and use sync) with `asyncCompression` option (synchronous Gzip is not availble in node < 0.11):
 
 Producer:
@@ -513,7 +507,7 @@ var consumer = new Kafka.SimpleConsumer({
 
 ### Initial Brokers
 
-__no-kafka__ will connect to the hosts specified in `connectionString` constructor option unless it is omitted. In this case it will use KAFKA_URL environment variable or fallback to default `kafka://127.0.0.1:9092`. For better availability always specify several initial brokers: `10.0.1.1:9092,10.0.1.2:9092,10.0.1.3:9092`. The `/` prefix is optional.
+__yes-kafka__ will connect to the hosts specified in `connectionString` constructor option unless it is omitted. In this case it will use KAFKA_URL environment variable or fallback to default `kafka://127.0.0.1:9092`. For better availability always specify several initial brokers: `10.0.1.1:9092,10.0.1.2:9092,10.0.1.3:9092`. The `/` prefix is optional.
 
 ### Disconnect / Timeout Handling
 All network errors are handled by the library: producer will retry sending failed messages for configured amount of times, simple consumer and group consumer will try to reconnect to failed host, update metadata as needed as so on.
@@ -605,7 +599,7 @@ internally advertised names needed for container to container communication do n
 ports or addresses when connecting externally via other tools.
 
 ### Reconnection delay
-In case of network error which prevents further operations __no-kafka__ will try to reconnect to Kafka brokers in a endless loop with the optionally progressive delay which can be configured with `reconnectionDelay` option.
+In case of network error which prevents further operations __yes-kafka__ will try to reconnect to Kafka brokers in a endless loop with the optionally progressive delay which can be configured with `reconnectionDelay` option.
 
 ## Logging
 
@@ -665,25 +659,6 @@ var consumer = new Kafka.GroupConsumer({
 
 ## Topic Creation
 
-There is no Kafka API call to create a topic. Kafka supports auto creating of topics when their metadata is first requested (`auto.create.topic` option) but the topic is created with all default parameters, which is useless. There is no way to be notified when the topic has been created, so the library will need to ping the server with some interval. There is also no way to be notified of any error for this operation. For this reason, having no guarantees, __no-kafka__ won't provide topic creation method until there will be a specific Kafka API call to create/manage topics.
+There is no Kafka API call to create a topic. Kafka supports auto creating of topics when their metadata is first requested (`auto.create.topic` option) but the topic is created with all default parameters, which is useless. There is no way to be notified when the topic has been created, so the library will need to ping the server with some interval. There is also no way to be notified of any error for this operation. For this reason, having no guarantees, __yes-kafka__ won't provide topic creation method until there will be a specific Kafka API call to create/manage topics.
 
 ## License: [MIT](https://github.com/oleksiyk/kafka/blob/master/LICENSE)
-
-[badge-license]: https://img.shields.io/badge/License-MIT-green.svg
-[license]: https://github.com/oleksiyk/kafka/blob/master/LICENSE
-[badge-travis]: https://api.travis-ci.org/oleksiyk/kafka.svg?branch=master
-[travis]: https://travis-ci.org/oleksiyk/kafka
-[badge-coverage]: https://codeclimate.com/github/oleksiyk/kafka/badges/coverage.svg
-[coverage]: https://codeclimate.com/github/oleksiyk/kafka/coverage
-[badge-david-deps]: https://david-dm.org/oleksiyk/kafka.svg
-[david-deps]: https://david-dm.org/oleksiyk/kafka
-[badge-david-dev-deps]: https://david-dm.org/oleksiyk/kafka/dev-status.svg
-[david-dev-deps]: https://david-dm.org/oleksiyk/kafka#info=devDependencies
-[badge-bithound-code]: https://www.bithound.io/github/oleksiyk/kafka/badges/code.svg
-[bithound-code]: https://www.bithound.io/github/oleksiyk/kafka
-[badge-bithound-overall]: https://www.bithound.io/github/oleksiyk/kafka/badges/score.svg
-[bithound-overall]: https://www.bithound.io/github/oleksiyk/kafka
-[badge-bithound-deps]: https://www.bithound.io/github/oleksiyk/kafka/badges/dependencies.svg
-[bithound-deps]: https://www.bithound.io/github/oleksiyk/kafka/master/dependencies/npm
-[badge-bithound-dev-deps]: https://www.bithound.io/github/oleksiyk/kafka/badges/devDependencies.svg
-[bithound-dev-deps]: https://www.bithound.io/github/oleksiyk/kafka/master/dependencies/npm
