@@ -15,7 +15,7 @@ var expectedPartitions = {
     '\u263a ww50w20ggb9'     : 26,
     '\u263a tf706z9i2v86w29' : 40,
     '\u263a pgb9'            : 1,
-    '\u263a b9'              : 8
+    '\u263a b9'              : 8,
 };
 
 describe('Default Partitioner', function () {
@@ -45,11 +45,11 @@ describe('Default Partitioner', function () {
 
         _.each(expectedPartitions, function (partition, key) {
             partitioner.partition('topic', new Array(numPartitions), {
-                key : key
+                key : key,
             }).should.equal(partition);
 
             partitioner.partition('topic', new Array(numPartitions), {
-                key : Buffer(key)
+                key : Buffer(key),
             }).should.equal(partition);
         });
     });
@@ -70,7 +70,7 @@ describe('Default Partitioner', function () {
         partitioner = new MyPartitioner();
 
         partitioner.partition('topic', new Array(12), {
-            key : 'msg 1-Something else'
+            key : 'msg 1-Something else',
         }).should.equal(6);
     });
 });
@@ -86,11 +86,11 @@ describe('Hash CRC32 Partitioner', function () {
         var partitioner = new Kafka.HashCRC32Partitioner();
 
         partitioner.partition('topic', new Array(10), {
-            key: 'test-key'
+            key: 'test-key',
         }).should.equal(1);
 
         partitioner.partition('topic', new Array(7), {
-            key: 'test-key'
+            key: 'test-key',
         }).should.equal(5);
     });
 });

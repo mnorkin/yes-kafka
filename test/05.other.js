@@ -15,18 +15,18 @@ describe('requiredAcks: 0', function () {
     before(function () {
         producer = new Kafka.Producer({
             requiredAcks: 0,
-            clientId: 'producer'
+            clientId: 'producer',
         });
         consumer = new Kafka.SimpleConsumer({
             idleTimeout: 100,
-            clientId: 'simple-consumer'
+            clientId: 'simple-consumer',
         });
 
-        return kafkaTestkit.createTopics(['kafka-require-acks-0-topic'])
+        return kafkaTestkit.createTopics(['kafka-require-acks-0-topic',])
             .then(function () {
                 return Promise.all([
                     producer.init(),
-                    consumer.init()
+                    consumer.init(),
                 ]);
             });
     });
@@ -34,7 +34,7 @@ describe('requiredAcks: 0', function () {
     after(function () {
         return Promise.all([
             producer.end(),
-            consumer.end()
+            consumer.end(),
         ]);
     });
 
@@ -43,7 +43,7 @@ describe('requiredAcks: 0', function () {
             return producer.send({
                 topic: 'kafka-require-acks-0-topic',
                 partition: 0,
-                message: { value: 'p00' }
+                message: { value: 'p00', },
             });
         })
         .delay(100)
@@ -70,17 +70,17 @@ describe('null and empty', function () {
     before(function () {
         producer = new Kafka.Producer({
             requiredAcks: 0,
-            clientId: 'producer'
+            clientId: 'producer',
         });
         consumer = new Kafka.SimpleConsumer({
             idleTimeout: 100,
-            clientId: 'simple-consumer'
+            clientId: 'simple-consumer',
         });
 
-        return kafkaTestkit.createTopics(['kafka-null-and-empty-topic']).then(function () {
+        return kafkaTestkit.createTopics(['kafka-null-and-empty-topic',]).then(function () {
             return Promise.all([
                 producer.init(),
-                consumer.init()
+                consumer.init(),
             ]);
         });
     });
@@ -88,7 +88,7 @@ describe('null and empty', function () {
     after(function () {
         return Promise.all([
             producer.end(),
-            consumer.end()
+            consumer.end(),
         ]);
     });
 
@@ -97,7 +97,7 @@ describe('null and empty', function () {
             return producer.send({
                 topic: 'kafka-null-and-empty-topic',
                 partition: 0,
-                message: { value: null, key: null }
+                message: { value: null, key: null, },
             });
         })
         .delay(200)
@@ -120,7 +120,7 @@ describe('null and empty', function () {
         return producer.send({
             topic: 'kafka-null-and-empty-topic',
             partition: 0,
-            message: { value: '', key: '' }
+            message: { value: '', key: '', },
         })
         .delay(100)
         .then(function () {
@@ -142,7 +142,7 @@ describe('null and empty', function () {
 
 describe('connectionString', function () {
     it('should throw when connectionString is wrong', function () {
-        var producer = new Kafka.Producer({ connectionString: 'localhost' });
+        var producer = new Kafka.Producer({ connectionString: 'localhost', });
 
         return producer.init().should.be.rejectedWith('No initial hosts to connect');
     });
@@ -156,9 +156,9 @@ describe('brokerRedirection', function () {
                 latched = true;
                 return {
                     host: host,
-                    port: port
+                    port: port,
                 };
-            }
+            },
         });
 
         return producer.init()
@@ -176,9 +176,9 @@ describe('brokerRedirection', function () {
                 latched = true;
                 return {
                     host: 'localhost',
-                    port: 9092
+                    port: 9092,
                 };
-            }
+            },
         });
 
         // If the init is succesful, then we remapped the bad
@@ -194,8 +194,8 @@ describe('brokerRedirection', function () {
             connectionString: 'does-not-exist:9092',
             ssl: false,
             brokerRedirection: {
-                'does-not-exist:9092': 'localhost:9092'
-            }
+                'does-not-exist:9092': 'localhost:9092',
+            },
         });
 
         // If the init is succesful, then we remapped the bad
@@ -208,8 +208,8 @@ describe('brokerRedirection', function () {
             connectionString: 'does-not-exist:9092',
             ssl: false,
             brokerRedirection: {
-                'kafka://does-not-exist:9092': 'localhost:9092'
-            }
+                'kafka://does-not-exist:9092': 'localhost:9092',
+            },
         });
 
         // If the init is succesful, then we remapped the bad
@@ -222,8 +222,8 @@ describe('brokerRedirection', function () {
             connectionString: 'does-not-exist:9092',
             ssl: false,
             brokerRedirection: {
-                'kafka://does-not-exist:9092': 'kafka://localhost:9092'
-            }
+                'kafka://does-not-exist:9092': 'kafka://localhost:9092',
+            },
         });
 
         // If the init is succesful, then we remapped the bad

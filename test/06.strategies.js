@@ -1,6 +1,6 @@
 'use strict';
 
-/* global describe, it, before, sinon, after  */
+/* global describe, it, before, after  */
 
 var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
@@ -11,7 +11,7 @@ var admin;
 
 before(function () {
     admin = new Kafka.GroupAdmin({
-        clientId: 'admin'
+        clientId: 'admin',
     });
     return admin.init();
 });
@@ -34,19 +34,19 @@ describe('Weighted Round Robin Assignment', function () {
             idleTimeout: 100,
             heartbeatTimeout: 100,
             clientId: 'group-consumer2',
-        })
+        }),
     ];
 
     before(function () {
-        return kafkaTestkit.createTopics([KAFKA_TOPIC]).then(function () {
+        return kafkaTestkit.createTopics([KAFKA_TOPIC,]).then(function () {
             return Promise.map(consumers, function (consumer, ind) {
                 return consumer.init({
-                    subscriptions: [KAFKA_TOPIC],
+                    subscriptions: [KAFKA_TOPIC,],
                     metadata: {
-                        weight: ind + 1
+                        weight: ind + 1,
                     },
                     strategy: new Kafka.WeightedRoundRobinAssignmentStrategy(),
-                    handler: function () {}
+                    handler: function () {},
                 });
             });
         })
@@ -61,8 +61,8 @@ describe('Weighted Round Robin Assignment', function () {
 
     it('should split partitions according to consumer weight', function () {
         return admin.describeGroup(consumers[0].options.groupId).then(function (group) {
-            var consumer1 = _.find(group.members, { clientId: 'group-consumer1' });
-            var consumer2 = _.find(group.members, { clientId: 'group-consumer2' });
+            var consumer1 = _.find(group.members, { clientId: 'group-consumer1', });
+            var consumer2 = _.find(group.members, { clientId: 'group-consumer2', });
 
             consumer1.memberAssignment.partitionAssignment[0].partitions.should.be.an('array').and.have.length(1);
             consumer2.memberAssignment.partitionAssignment[0].partitions.should.be.an('array').and.have.length(2);
@@ -84,20 +84,20 @@ describe('Consistent Assignment', function () {
             idleTimeout: 100,
             heartbeatTimeout: 100,
             clientId: 'group-consumer2',
-        })
+        }),
     ];
 
     before(function () {
-        return kafkaTestkit.createTopics([KAFKA_TOPIC]).then(function () {
+        return kafkaTestkit.createTopics([KAFKA_TOPIC,]).then(function () {
             return Promise.map(consumers, function (consumer, ind) {
                 return consumer.init({
-                    subscriptions: [KAFKA_TOPIC],
+                    subscriptions: [KAFKA_TOPIC,],
                     metadata: {
                         id: 'id' + ind,
-                        weight: 10
+                        weight: 10,
                     },
                     strategy: new Kafka.ConsistentAssignmentStrategy(),
-                    handler: function () {}
+                    handler: function () {},
                 });
             });
         })
@@ -112,8 +112,8 @@ describe('Consistent Assignment', function () {
 
     it('should split partitions according to consumer weight', function () {
         return admin.describeGroup(consumers[0].options.groupId).then(function (group) {
-            var consumer1 = _.find(group.members, { clientId: 'group-consumer1' });
-            var consumer2 = _.find(group.members, { clientId: 'group-consumer2' });
+            var consumer1 = _.find(group.members, { clientId: 'group-consumer1', });
+            var consumer2 = _.find(group.members, { clientId: 'group-consumer2', });
             var consumer1Partition = consumer1.memberAssignment.partitionAssignment[0].partitions[0];
 
             consumer1.memberAssignment.partitionAssignment[0].partitions.should.have.length(1);

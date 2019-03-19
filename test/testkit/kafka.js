@@ -47,7 +47,7 @@ before(function () {
                 'ssl/server.keystore.jks',
                 'ssl/server.truststore.jks',
             ],
-        }, { t: 'no-kafka' });
+        }, { t: 'no-kafka', });
     })
     .then(function (stream) {
         return new Promise(function (resolve, reject) {
@@ -65,11 +65,11 @@ before(function () {
             Image: 'no-kafka',
             HostConfig: {
                 PortBindings: {
-                    ['2181/tcp']: [{ HostPort: `${dockerZookeeperPort}/tcp` }],
-                    ['9092/tcp']: [{ HostPort: `${dockerKafkaPort}/tcp` }],
-                    ['9093/tcp']: [{ HostPort: `${dockerKafkaSslPort}/tcp` }],
+                    ['2181/tcp']: [{ HostPort: `${dockerZookeeperPort}/tcp`, },],
+                    ['9092/tcp']: [{ HostPort: `${dockerKafkaPort}/tcp`, },],
+                    ['9093/tcp']: [{ HostPort: `${dockerKafkaSslPort}/tcp`, },],
                 },
-            }
+            },
         });
     }).then(function (_container) {
         container = _container;
@@ -80,6 +80,9 @@ before(function () {
         return dockerUtils.waitForOutput(container, function (line) {
             return line.search('kafka entered RUNNING state') > 0;
         });
+    })
+    .then(function () {
+        return new Promise(resolve => setTimeout(resolve, 1000)); // wait for 1s
     })
     .then(function () {
         console.log('Kafka started'); // eslint-disable-line

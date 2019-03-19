@@ -15,7 +15,7 @@ describe('SimpleConsumer', function () {
 
         var dataHandlerSpy = sinon.spy(function (messageSet, topic, partition) {
             return Promise.each(messageSet, function (m) {
-                return consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset }).then(result => {
+                return consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset, }).then(result => {
                     return result;
                 });
             });
@@ -24,11 +24,11 @@ describe('SimpleConsumer', function () {
         before(function () {
             producer = new Kafka.Producer({
                 requiredAcks: 1,
-                clientId: 'producer2'
+                clientId: 'producer2',
             });
             consumer = new Kafka.SimpleConsumer({
                 idleTimeout: 100,
-                clientId: 'simple-consumer'
+                clientId: 'simple-consumer',
             });
             return Promise.all([
                 producer.init(),
@@ -49,7 +49,7 @@ describe('SimpleConsumer', function () {
         after(function () {
             return Promise.all([
                 consumer.end(),
-                producer.end()
+                producer.end(),
             ]);
         });
 
@@ -72,7 +72,7 @@ describe('SimpleConsumer', function () {
             return producer.send({
                 topic: 'kafka-simple-consumer-topic-1',
                 partition: 0,
-                message: { value: 'p00' }
+                message: { value: 'p00', },
             })
             .delay(500)
             .then(function () {
@@ -97,8 +97,8 @@ describe('SimpleConsumer', function () {
                 partition: 0,
                 message: {
                     key: 'test-key-p00',
-                    value: 'p00'
-                }
+                    value: 'p00',
+                },
             })
             .delay(500)
             .then(function () {
@@ -124,7 +124,7 @@ describe('SimpleConsumer', function () {
             return producer.send({
                 topic: 'kafka-simple-consumer-topic-1',
                 partition: 0,
-                message: { value: '人人生而自由，在尊嚴和權利上一律平等。' }
+                message: { value: '人人生而自由，在尊嚴和權利上一律平等。', },
             })
             .delay(500)
             .then(function () {
@@ -151,7 +151,7 @@ describe('SimpleConsumer', function () {
 
         it('should reset offset to LATEST on OffsetOutOfRange error', function () {
             return consumer.offset('kafka-simple-consumer-topic-1', 0).then(function (offset) {
-                return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset + 200 }, dataHandlerSpy)
+                return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset + 200, }, dataHandlerSpy)
                 .then(function () {
                     consumer.subscriptions['kafka-simple-consumer-topic-1:0'].offset.should.be.eql(offset + 200);
                 })
@@ -167,16 +167,16 @@ describe('SimpleConsumer', function () {
                 return producer.send([{
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 0,
-                    message: { value: 'p000' }
+                    message: { value: 'p000', },
                 }, {
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 0,
-                    message: { value: 'p001' }
-                }]);
+                    message: { value: 'p001', },
+                },]);
             })
             .then(function () {
                 return consumer.offset('kafka-simple-consumer-topic-1', 0).then(function (offset) {
-                    return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2 }, dataHandlerSpy)
+                    return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, }, dataHandlerSpy)
                     .delay(200) // consumer sleep timeout
                     .then(function () {
                         dataHandlerSpy.should.have.been.called; // eslint-disable-line
@@ -194,7 +194,7 @@ describe('SimpleConsumer', function () {
                 return consumer.offset('kafka-simple-consumer-topic-1', 0).then(function (offset) {
                     // ask for maxBytes that is only 1 byte less then required for both last messages
                     var maxBytes = 2 * (8 + 4) + maxBytesTestMessagesSize - 1;
-                    return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, maxBytes: maxBytes }, dataHandlerSpy)
+                    return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, maxBytes: maxBytes, }, dataHandlerSpy)
                     .delay(300)
                     .then(function () {
                         /* jshint expr: true */
@@ -213,12 +213,12 @@ describe('SimpleConsumer', function () {
             return producer.send([{
                 topic: 'kafka-simple-consumer-topic-1',
                 partition: 0,
-                message: { value: 'p0000000000000001' }
+                message: { value: 'p0000000000000001', },
             }, {
                 topic: 'kafka-simple-consumer-topic-1',
                 partition: 0,
-                message: { value: 'p001' }
-            }])
+                message: { value: 'p001', },
+            },])
             .delay(300)
             .then(function () {
                 dataHandlerSpy.should.have.been.called; // eslint-disable-line
@@ -230,7 +230,7 @@ describe('SimpleConsumer', function () {
                     return consumer.offset('kafka-simple-consumer-topic-1', 0).then(function (offset) {
                         // ask for maxBytes that is smaller then size of the first message but enough to receive second message
                         var maxBytes = 8 + 4 + mSize - 1;
-                        return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, maxBytes: maxBytes }, dataHandlerSpy)
+                        return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, maxBytes: maxBytes, }, dataHandlerSpy)
                         .delay(300)
                         .then(function () {
                             dataHandlerSpy.should.have.been.calledTwice; // eslint-disable-line
@@ -247,7 +247,7 @@ describe('SimpleConsumer', function () {
                 topic: 'kafka-simple-consumer-topic-1',
                 partition: 0,
                 offset: 1,
-                metadata: 'm1'
+                metadata: 'm1',
             })
             .then(function (result) {
                 result.should.be.an('array').that.has.length(1);
@@ -264,20 +264,20 @@ describe('SimpleConsumer', function () {
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 0,
                     offset: 1,
-                    metadata: 'm1'
+                    metadata: 'm1',
                 },
                 {
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 1,
                     offset: 2,
-                    metadata: 'm2'
+                    metadata: 'm2',
                 },
                 {
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 2,
                     offset: 3,
-                    metadata: 'm3'
-                }
+                    metadata: 'm3',
+                },
             ]).then(function (result) {
                 result.should.be.an('array').that.has.length(3);
                 result[0].should.be.an('object');
@@ -299,16 +299,16 @@ describe('SimpleConsumer', function () {
             return consumer.fetchOffset([
                 {
                     topic: 'kafka-simple-consumer-topic-1',
-                    partition: 0
+                    partition: 0,
                 },
                 {
                     topic: 'kafka-simple-consumer-topic-1',
-                    partition: 1
+                    partition: 1,
                 },
                 {
                     topic: 'kafka-simple-consumer-topic-1',
-                    partition: 2
-                }
+                    partition: 2,
+                },
             ]).then(function (result) {
                 result.should.be.an('array').that.has.length(3);
                 result[0].should.be.an('object');
@@ -326,9 +326,9 @@ describe('SimpleConsumer', function () {
                 result[0].should.have.property('error', null);
                 result[1].should.have.property('error', null);
                 result[2].should.have.property('error', null);
-                _.find(result, { topic: 'kafka-simple-consumer-topic-1', partition: 0 }).offset.should.be.eql(1);
-                _.find(result, { topic: 'kafka-simple-consumer-topic-1', partition: 1 }).offset.should.be.eql(2);
-                _.find(result, { topic: 'kafka-simple-consumer-topic-1', partition: 2 }).offset.should.be.eql(3);
+                _.find(result, { topic: 'kafka-simple-consumer-topic-1', partition: 0, }).offset.should.be.eql(1);
+                _.find(result, { topic: 'kafka-simple-consumer-topic-1', partition: 1, }).offset.should.be.eql(2);
+                _.find(result, { topic: 'kafka-simple-consumer-topic-1', partition: 2, }).offset.should.be.eql(3);
             });
         });
 
@@ -352,7 +352,7 @@ describe('SimpleConsumer', function () {
 
         it('should subscribe partitions specified as array', function () {
             return consumer.unsubscribe('kafka-simple-consumer-topic-1').then(function () {
-                return consumer.subscribe('kafka-simple-consumer-topic-1', [0, 1], dataHandlerSpy).then(function () {
+                return consumer.subscribe('kafka-simple-consumer-topic-1', [0, 1,], dataHandlerSpy).then(function () {
                     consumer.subscriptions.should.have.property('kafka-simple-consumer-topic-1:0');
                     consumer.subscriptions.should.have.property('kafka-simple-consumer-topic-1:1');
                     consumer.subscriptions.should.not.have.property('kafka-simple-consumer-topic-1:2');
@@ -362,7 +362,7 @@ describe('SimpleConsumer', function () {
 
         it('should subscribe partitions specified as array when options specified', function () {
             return consumer.unsubscribe('kafka-simple-consumer-topic-1').then(function () {
-                return consumer.subscribe('kafka-simple-consumer-topic-1', [0, 1], {}, dataHandlerSpy)
+                return consumer.subscribe('kafka-simple-consumer-topic-1', [0, 1,], {}, dataHandlerSpy)
                 .then(function () {
                     consumer.subscriptions.should.have.property('kafka-simple-consumer-topic-1:0');
                     consumer.subscriptions.should.have.property('kafka-simple-consumer-topic-1:1');
@@ -383,7 +383,7 @@ describe('SimpleConsumer', function () {
         });
 
         it('should throw when missing dataHandler function', function () {
-            return consumer.subscribe('kafka-simple-consumer-topic-1', [0, 1], {}).should.be.rejected;
+            return consumer.subscribe('kafka-simple-consumer-topic-1', [0, 1,], {}).should.be.rejected;
         });
 
         it('should ignore sync errors in data handler', function () {
@@ -394,7 +394,7 @@ describe('SimpleConsumer', function () {
                 return producer.send({
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 0,
-                    message: { value: 'p00' }
+                    message: { value: 'p00', },
                 });
             })
             .delay(200)
@@ -411,7 +411,7 @@ describe('SimpleConsumer', function () {
                 return producer.send({
                     topic: 'kafka-simple-consumer-topic-1',
                     partition: 0,
-                    message: { value: 'p00' }
+                    message: { value: 'p00', },
                 });
             })
             .delay(200)
@@ -429,22 +429,22 @@ describe('SimpleConsumer', function () {
         before(function () {
             producer = new Kafka.Producer({
                 requiredAcks: 1,
-                clientId: 'producer'
+                clientId: 'producer',
             });
             consumer = new Kafka.SimpleConsumer({
                 idleTimeout: 100,
-                clientId: 'simple-consumer'
+                clientId: 'simple-consumer',
             });
             return Promise.all([
                 producer.init(),
-                consumer.init()
+                consumer.init(),
             ]);
         });
 
         after(function () {
             return Promise.all([
                 consumer.end(),
-                producer.end()
+                producer.end(),
             ]);
         });
 
@@ -458,23 +458,23 @@ describe('SimpleConsumer', function () {
                     return producer.send({
                         topic: 'kafka-simple-consumer-topic-1',
                         partition: 0,
-                        message: { value: 'p00' }
+                        message: { value: 'p00', },
                     });
                 }),
                 consumer.subscribe('kafka-simple-consumer-topic-2', 0, dataHandlerSpy).then(function () {
                     return producer.send({
                         topic: 'kafka-simple-consumer-topic-2',
                         partition: 0,
-                        message: { value: 'p01' }
+                        message: { value: 'p01', },
                     });
                 }),
                 consumer.subscribe('kafka-simple-consumer-topic-3', 0, dataHandlerSpy).then(function () {
                     return producer.send({
                         topic: 'kafka-simple-consumer-topic-3',
                         partition: 0,
-                        message: { value: 'p01' }
+                        message: { value: 'p01', },
                     });
-                })
+                }),
             ])
             .delay(500)
             .then(function () {

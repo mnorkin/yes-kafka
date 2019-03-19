@@ -1,6 +1,6 @@
 'use strict';
 
-/* global describe, it, before, sinon, after  */
+/* global describe, it, before, after  */
 
 var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
@@ -12,23 +12,23 @@ describe('GroupAdmin', function () {
 
     before(function () {
         admin = new Kafka.GroupAdmin({
-            clientId: 'admin'
+            clientId: 'admin',
         });
         consumer = new Kafka.GroupConsumer({
             groupId: 'no-kafka-admin-test-group',
             timeout: 1000,
             idleTimeout: 100,
             heartbeatTimeout: 100,
-            clientId: 'group-consumer'
+            clientId: 'group-consumer',
         });
-        return kafkaTestkit.createTopics(['kafka-admin-topic-1'])
+        return kafkaTestkit.createTopics(['kafka-admin-topic-1',])
             .then(function () {
                 return Promise.all([
                     admin.init(),
                     consumer.init({
-                        subscriptions: ['kafka-admin-topic-1'],
+                        subscriptions: ['kafka-admin-topic-1',],
                         metadata: 'consumer-metadata',
-                        handler: function () {}
+                        handler: function () {},
                     }),
                 ]);
             });
@@ -37,7 +37,7 @@ describe('GroupAdmin', function () {
     after(function () {
         return Promise.all([
             admin.end(),
-            consumer.end()
+            consumer.end(),
         ]);
     });
 
@@ -85,7 +85,7 @@ describe('GroupAdmin', function () {
             group.members[0].should.have.property('memberAssignment').that.is.a('object');
             group.members[0].memberAssignment.should.have.property('partitionAssignment').that.is.an('array');
             group.members[0].memberAssignment.partitionAssignment[0].should.have.property('topic', 'kafka-admin-topic-1');
-            group.members[0].memberAssignment.partitionAssignment[0].should.have.property('partitions').that.is.an('array', [0, 1, 2]);
+            group.members[0].memberAssignment.partitionAssignment[0].should.have.property('partitions').that.is.an('array', [0, 1, 2,]);
         });
     });
 });
@@ -96,26 +96,26 @@ describe('GroupAdmin', function () {
     var producer;
 
     before(function () {
-        admin = new Kafka.GroupAdmin({ clientId: 'admin' });
+        admin = new Kafka.GroupAdmin({ clientId: 'admin', });
         producer = new Kafka.Producer({
             requiredAcks: 1,
-            clientId: 'producer'
+            clientId: 'producer',
         });
         consumer = new Kafka.GroupConsumer({
             groupId: 'no-kafka-admin-test-group',
             timeout: 1000,
             idleTimeout: 100,
             heartbeatTimeout: 100,
-            clientId: 'group-consumer'
+            clientId: 'group-consumer',
         });
-        return kafkaTestkit.createTopics(['kafka-admin-topic-2']);
+        return kafkaTestkit.createTopics(['kafka-admin-topic-2',]);
     });
 
     after(function () {
         return Promise.all([
             admin.end(),
             consumer.end(),
-            producer.end()
+            producer.end(),
         ]);
     });
 
@@ -126,7 +126,7 @@ describe('GroupAdmin', function () {
                 // Produce and consume a message in order to set
                 // the current offset for partition 0
                 consumer.init({
-                    subscriptions: ['kafka-admin-topic-2'],
+                    subscriptions: ['kafka-admin-topic-2',],
                     metadata: 'consumer-metadata',
                     handler: function (messageSet, topic, partition) {
                         return Promise.each(messageSet, function (m) {
@@ -135,7 +135,7 @@ describe('GroupAdmin', function () {
                                 {
                                     topic: topic,
                                     partition: partition,
-                                    offset: m.offset
+                                    offset: m.offset,
                                 }
                             );
                         }).then(function () {
@@ -143,24 +143,24 @@ describe('GroupAdmin', function () {
                             // expecting lag to be 0 at this point
                             resolve();
                         });
-                    }
+                    },
                 }),
-                producer.init()
+                producer.init(),
             ]).then(function () {
                 producer.send({
                     topic: 'kafka-admin-topic-2',
                     partition: 0,
                     message: {
                         key: 'test-key',
-                        value: 'Hello!'
-                    }
+                        value: 'Hello!',
+                    },
                 });
             });
         }).then(function () {
             return admin.fetchConsumerLag(consumer.options.groupId, [{
                 topicName: 'kafka-admin-topic-2',
-                partitions: [0, 1, 2]
-            }]);
+                partitions: [0, 1, 2,],
+            },]);
         }).then(function (consumers) {
             consumers.should.have.length(3, 'asked for 3 partitions, expecting 3 responses');
             consumers[0].should.have.property('topic');

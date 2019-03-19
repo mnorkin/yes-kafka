@@ -41,7 +41,7 @@
     "mocha": "^5.2.0",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0",
-    "snappy": "^5.0.0"
+    "snappy": "^6.0.0"
   },
   "bugs": {
     "url": "https://github.com/mnorkin/yes-kafka/issues"

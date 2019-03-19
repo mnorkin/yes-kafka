@@ -47,8 +47,8 @@ describe('Producer', function () {
             topic: 'kafka-producer-topic-1',
             partition: 0,
             message: {
-                value: 'Hello!'
-            }
+                value: 'Hello!',
+            },
         }).then(function (result) {
             result.should.be.an('array').and.have.length(1);
             result[0].should.be.an('object');
@@ -65,8 +65,8 @@ describe('Producer', function () {
             partition: 0,
             message: {
                 key: 'test-key',
-                value: 'Hello!'
-            }
+                value: 'Hello!',
+            },
         }).then(function (result) {
             result.should.be.an('array').and.have.length(1);
             result[0].should.be.an('object');
@@ -81,8 +81,8 @@ describe('Producer', function () {
         return producer.send({
             partition: 0,
             message: {
-                value: 'Hello!'
-            }
+                value: 'Hello!',
+            },
         }).should.eventually.be.rejectedWith('Missing or wrong topic field');
     });
 
@@ -90,8 +90,8 @@ describe('Producer', function () {
         return producer.send({
             topic: 'kafka-producer-topic-1',
             message: {
-                value: 'Hello!'
-            }
+                value: 'Hello!',
+            },
         }).then(function (result) {
             result.should.be.an('array').and.have.length(1);
         });
@@ -101,12 +101,12 @@ describe('Producer', function () {
         var msgs = [{
             topic: 'kafka-producer-topic-1',
             partition: 1,
-            message: { value: 'Hello!' }
+            message: { value: 'Hello!', },
         }, {
             topic: 'kafka-producer-topic-1',
             partition: 2,
-            message: { value: 'Hello!' }
-        }];
+            message: { value: 'Hello!', },
+        },];
         return producer.send(msgs).then(function (result) {
             result.should.be.an('array').and.have.length(2);
             result[0].should.be.an('object');
@@ -126,18 +126,18 @@ describe('Producer', function () {
         var msgs = [{
             topic: 'kafka-producer-topic-1',
             partition: 1,
-            message: { value: 'Hello!' }
+            message: { value: 'Hello!', },
         }, {
             topic: 'kafka-producer-topic-2',
             partition: 2,
-            message: { value: 'Hello!' }
+            message: { value: 'Hello!', },
         }, {
             topic: 'kafka-producer-topic-3',
             partition: 2,
-            message: { value: 'Hello!' }
-        }];
+            message: { value: 'Hello!', },
+        },];
         return producer.send(msgs).then(function (result) {
-            var resultTopics = [result[0].topic, result[1].topic, result[2].topic];
+            var resultTopics = [result[0].topic, result[1].topic, result[2].topic,];
 
             result.should.be.an('array').and.have.length(3);
             result[0].should.be.an('object');
@@ -163,36 +163,36 @@ describe('Producer', function () {
     it('should return an error for unknown partition/topic', function () {
         const unknownTopicProducer = new Kafka.Producer({
             requiredAcks: 1,
-            clientId: 'producer'
+            clientId: 'producer',
         });
 
         var msgs = [{
             topic: 'kafka-test-unknown-topic',
             partition: 0,
-            message: { value: 'Hello!' }
-        }];
+            message: { value: 'Hello!', },
+        },];
         return unknownTopicProducer.send(msgs, {
             retries: {
                 attempts: 5,
                 delay: {
                     min: 100,
-                    max: 300
-                }
-            }
+                    max: 300,
+                },
+            },
         }).should.eventually.be.rejectedWith('This request is for a topic or partition that does not exist on this broker.');
     });
 
     it('partitioner arguments', function () {
         var _producer = new Kafka.Producer({
-            clientId: 'producer'
+            clientId: 'producer',
         });
         var partitionerSpy = _producer.partitioner.partition = sinon.spy(function () { return 1; });
         return _producer.init().then(function () {
             return _producer.send({
                 topic: 'kafka-producer-topic-1',
                 message: {
-                    value: 'Hello!'
-                }
+                    value: 'Hello!',
+                },
             });
         })
         .then(function () {
@@ -212,7 +212,7 @@ describe('Producer', function () {
         function _try() {
             return new Kafka.Producer({
                 clientId: 'producer',
-                partitioner: 'something else'
+                partitioner: 'something else',
             });
         }
 
@@ -231,15 +231,15 @@ describe('Producer', function () {
 
         _producer = new Kafka.Producer({
             clientId: 'producer',
-            partitioner: new MyPartitioner()
+            partitioner: new MyPartitioner(),
         });
 
         return _producer.init().then(function () {
             return _producer.send({
                 topic: 'kafka-producer-topic-1',
                 message: {
-                    value: 'Hello!'
-                }
+                    value: 'Hello!',
+                },
             });
         })
         .then(function (result) {
@@ -254,7 +254,7 @@ describe('Producer', function () {
 
     it('should determine topic partition using async partitioner function', function () {
         var _producer = new Kafka.Producer({
-            clientId: 'producer'
+            clientId: 'producer',
         });
         _producer.partitioner.partition = function dummySyncPartitioner(/*topicName, partitions, message*/) {
             return Promise.delay(100).then(function () {
@@ -265,8 +265,8 @@ describe('Producer', function () {
             return _producer.send({
                 topic: 'kafka-producer-topic-1',
                 message: {
-                    value: 'Hello!'
-                }
+                    value: 'Hello!',
+                },
             });
         })
         .then(function (result) {
@@ -281,18 +281,18 @@ describe('Producer', function () {
 
     it('should return error for unknown topic', function () {
         var _producer = new Kafka.Producer({
-            clientId: 'producer'
+            clientId: 'producer',
         });
         return _producer.init().then(function () {
             return _producer.send({
                 topic: 'kafka-test-unknown-topic',
                 message: {
-                    value: 'Hello!'
-                }
+                    value: 'Hello!',
+                },
             }, {
                 retries: {
-                    attempts: 1
-                }
+                    attempts: 1,
+                },
             });
         })
         .should.eventually.be.rejectedWith('This request is for a topic or partition that does not exist on this broker.');
@@ -302,8 +302,8 @@ describe('Producer', function () {
         var _producer = new Kafka.Producer({
             clientId: 'producer',
             batch: {
-                size: 10
-            }
+                size: 10,
+            },
         });
 
         var spy = sinon.spy(_producer.client, 'produceRequest');
@@ -314,16 +314,16 @@ describe('Producer', function () {
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
+                        value: '12345',
+                    },
                 }),
                 _producer.send({
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
-                })
+                        value: '12345',
+                    },
+                }),
             ]);
         })
         .then(function () {
@@ -335,8 +335,8 @@ describe('Producer', function () {
         var _producer = new Kafka.Producer({
             clientId: 'producer',
             batch: {
-                size: 1
-            }
+                size: 1,
+            },
         });
 
         var spy = sinon.spy(_producer.client, 'produceRequest');
@@ -347,16 +347,16 @@ describe('Producer', function () {
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
+                        value: '12345',
+                    },
                 }),
                 _producer.send({
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
-                })
+                        value: '12345',
+                    },
+                }),
             ]);
         })
         .then(function () {
@@ -368,8 +368,8 @@ describe('Producer', function () {
         var _producer = new Kafka.Producer({
             clientId: 'producer',
             batch: {
-                size: 1
-            }
+                size: 1,
+            },
         });
 
         var spy = sinon.spy(_producer.client, 'produceRequest');
@@ -380,16 +380,16 @@ describe('Producer', function () {
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
-                }, { batch: { size: 10 } }),
+                        value: '12345',
+                    },
+                }, { batch: { size: 10, }, }),
                 _producer.send({
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
-                }, { batch: { size: 10 } })
+                        value: '12345',
+                    },
+                }, { batch: { size: 10, }, }),
             ]);
         })
         .then(function () {
@@ -401,8 +401,8 @@ describe('Producer', function () {
         var _producer = new Kafka.Producer({
             clientId: 'producer',
             batch: {
-                size: 1
-            }
+                size: 1,
+            },
         });
 
         var spy = sinon.spy(_producer.client, 'produceRequest');
@@ -413,16 +413,16 @@ describe('Producer', function () {
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
-                }, { batch: { size: 100 } }),
+                        value: '12345',
+                    },
+                }, { batch: { size: 100, }, }),
                 _producer.send({
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
-                }, { batch: { size: 200 } })
+                        value: '12345',
+                    },
+                }, { batch: { size: 200, }, }),
             ]);
         })
         .then(function () {
@@ -435,8 +435,8 @@ describe('Producer', function () {
             clientId: 'producer',
             batch: {
                 size: 16384,
-                maxWait: 20
-            }
+                maxWait: 20,
+            },
         });
 
         var spy = sinon.spy(_producer.client, 'produceRequest');
@@ -446,8 +446,8 @@ describe('Producer', function () {
                 topic: 'kafka-producer-topic-1',
                 partition: 0,
                 message: {
-                    value: '12345'
-                }
+                    value: '12345',
+                },
             })
             .delay(100)
             .then(function () {
@@ -455,8 +455,8 @@ describe('Producer', function () {
                     topic: 'kafka-producer-topic-1',
                     partition: 0,
                     message: {
-                        value: '12345'
-                    }
+                        value: '12345',
+                    },
                 });
             });
         })
@@ -467,18 +467,18 @@ describe('Producer', function () {
 
     it('should retry on send failure', function () {
         var _producer = new Kafka.Producer({
-            clientId: 'producer2'
+            clientId: 'producer2',
         });
 
         var stub = sinon.stub(_producer.client, 'produceRequest');
 
         stub.onCall(0).resolves([{
             error: {
-                code: 'UnknownTopicOrPartition'
+                code: 'UnknownTopicOrPartition',
             },
             topic: 'kafka-producer-topic-1',
             partition: 0,
-        }]);
+        },]);
         stub.onCall(1).resolves({});
 
         return _producer.init().then(function () {
@@ -486,8 +486,8 @@ describe('Producer', function () {
                 topic: 'kafka-producer-topic-1',
                 partition: 0,
                 message: {
-                    value: '12345'
-                }
+                    value: '12345',
+                },
             })
             .delay(200)
             .then(function () {

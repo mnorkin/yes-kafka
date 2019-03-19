@@ -1,6 +1,6 @@
 'use strict';
 
-/* global step */
+/* global Promise */
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, '__esModule', { value: true });
+Object.defineProperty(exports, '__esModule', { value: true, });
 const string_decoder_1 = require('string_decoder'); // eslint-disable-line
 /**
  * Pull docker image and wait for it if you need
@@ -53,11 +53,11 @@ exports.pullImageAsync = function (dockerode, imageName, onProgress) {
 exports.containerExec = function (container, cmd) {
     // TODO: add detach (don't use stream nor wait for output) options. Useful for daemons
     return new Promise((resolve, error) => {
-        container.exec({ Cmd: cmd, AttachStdout: true, AttachStderr: true }, (cErr, exec) => {
+        container.exec({ Cmd: cmd, AttachStdout: true, AttachStderr: true, }, (cErr, exec) => {
             if (cErr) {
                 error(cErr);
             }
-            exec.start({ hijack: true }, (sErr, stream) => {
+            exec.start({ hijack: true, }, (sErr, stream) => {
                 const output = [];
                 const decoder = new string_decoder_1.StringDecoder('utf8');
                 if (sErr) {
@@ -88,7 +88,7 @@ exports.waitForOutput = function (_container, predicate) {
         setTimeout(() => {
             reject(`waiting for container excited timeout ${timeout} (default 30s)`);
         }, timeout);
-        _container.attach({ stream: true, stdout: true, stderr: true }, (err, res) => {
+        _container.attach({ stream: true, stdout: true, stderr: true, }, (err, res) => {
             if (err) {
                 reject(err);
             }
@@ -114,9 +114,9 @@ exports.waitForOutput = function (_container, predicate) {
  */
 exports.imageExists = (dockerode, imageNames) => __awaiter(this, void 0, void 0, function* () {
     const imageNamesArr = (typeof imageNames === 'string')
-        ? [imageNames]
+        ? [imageNames,]
         : imageNames;
-    const images = yield dockerode.listImages({ filters: { reference: imageNamesArr } });
+    const images = yield dockerode.listImages({ filters: { reference: imageNamesArr, }, });
     return (images.length > 0);
 });
 //# sourceMappingURL=Index.js.map

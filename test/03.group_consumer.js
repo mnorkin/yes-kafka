@@ -10,7 +10,7 @@ var kafkaTestkit = require('./testkit/kafka');
 function dataHandlerFactory(consumer) {
     return sinon.spy(function (messageSet, topic, partition) {
         return Promise.each(messageSet, function (m) {
-            return consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset });
+            return consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset, });
         });
     });
 }
@@ -25,24 +25,24 @@ describe('Group Consumer', function () {
             this.timeout(12000);
             producer = new Kafka.Producer({
                 requiredAcks: 1,
-                clientId: 'producer'
+                clientId: 'producer',
             });
             consumer = new Kafka.GroupConsumer({
                 groupId: 'group-single-consumer',
                 idleTimeout: 100,
                 heartbeatTimeout: 100,
-                clientId: 'group-consumer1'
+                clientId: 'group-consumer1',
             });
             dataHandlerSpy = dataHandlerFactory(consumer);
 
             return kafkaTestkit.createTopics([
-                'kafka-group-consumer-topic-1'
+                'kafka-group-consumer-topic-1',
             ]).then(function () {
                 return Promise.all([
                     producer.init(),
                     consumer.init({
-                        subscriptions: ['kafka-group-consumer-topic-1'],
-                        handler: dataHandlerSpy
+                        subscriptions: ['kafka-group-consumer-topic-1',],
+                        handler: dataHandlerSpy,
                     }),
                 ]);
             });
@@ -51,7 +51,7 @@ describe('Group Consumer', function () {
         after(function () {
             return Promise.all([
                 producer.end(),
-                consumer.end()
+                consumer.end(),
             ]);
         });
 
@@ -74,7 +74,7 @@ describe('Group Consumer', function () {
             return producer.send({
                 topic: 'kafka-group-consumer-topic-1',
                 partition: 0,
-                message: { value: 'p00' }
+                message: { value: 'p00', },
             })
             .delay(200)
             .then(function () {
@@ -97,14 +97,14 @@ describe('Group Consumer', function () {
                     topic: 'kafka-group-consumer-topic-1',
                     partition: 0,
                     offset: 1,
-                    metadata: 'm1'
+                    metadata: 'm1',
                 },
                 {
                     topic: 'kafka-group-consumer-topic-1',
                     partition: 1,
                     offset: 2,
-                    metadata: 'm2'
-                }
+                    metadata: 'm2',
+                },
             ]).then(function (result) {
                 result.should.be.an('array').that.has.length(2);
                 result[0].should.be.an('object');
@@ -122,12 +122,12 @@ describe('Group Consumer', function () {
             return consumer.fetchOffset([
                 {
                     topic: 'kafka-group-consumer-topic-1',
-                    partition: 0
+                    partition: 0,
                 },
                 {
                     topic: 'kafka-group-consumer-topic-1',
-                    partition: 1
-                }
+                    partition: 1,
+                },
             ]).then(function (result) {
                 result.should.be.an('array').that.has.length(2);
                 result[0].should.be.an('object');
@@ -142,10 +142,10 @@ describe('Group Consumer', function () {
                 result[1].should.have.property('metadata').that.is.a('string');
                 result[0].should.have.property('error', null);
                 result[1].should.have.property('error', null);
-                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 0 }).offset.should.be.eql(1 + 1);
-                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 1 }).offset.should.be.eql(2 + 1);
-                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 0 }).metadata.should.be.eql('m1');
-                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 1 }).metadata.should.be.eql('m2');
+                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 0, }).offset.should.be.eql(1 + 1);
+                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 1, }).offset.should.be.eql(2 + 1);
+                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 0, }).metadata.should.be.eql('m1');
+                _.find(result, { topic: 'kafka-group-consumer-topic-1', partition: 1, }).metadata.should.be.eql('m2');
             });
         });
 
@@ -154,17 +154,17 @@ describe('Group Consumer', function () {
                 producer.send({
                     topic: 'kafka-group-consumer-topic-1',
                     partition: 0,
-                    message: { value: 'p00' }
+                    message: { value: 'p00', },
                 }),
                 producer.send({
                     topic: 'kafka-group-consumer-topic-1',
                     partition: 1,
-                    message: { value: 'p00' }
+                    message: { value: 'p00', },
                 }),
                 producer.send({
                     topic: 'kafka-group-consumer-topic-1',
                     partition: 2,
-                    message: { value: 'p00' }
+                    message: { value: 'p00', },
                 }),
             ])
             .then(function () {
@@ -190,13 +190,13 @@ describe('Group Consumer', function () {
         before(function () {
             producer = new Kafka.Producer({
                 requiredAcks: 1,
-                clientId: 'producer'
+                clientId: 'producer',
             });
             consumer = new Kafka.GroupConsumer({
                 groupId: 'group-multi-topic-consumer',
                 idleTimeout: 100,
                 heartbeatTimeout: 100,
-                clientId: 'group-consumer1'
+                clientId: 'group-consumer1',
             });
             dataHandlerSpy = dataHandlerFactory(consumer);
 
@@ -211,10 +211,10 @@ describe('Group Consumer', function () {
                         subscriptions: [
                             'kafka-group-consumer-multi-topic-1',
                             'kafka-group-consumer-multi-topic-2',
-                            'kafka-group-consumer-multi-topic-3'
+                            'kafka-group-consumer-multi-topic-3',
                         ],
-                        handler: dataHandlerSpy
-                    })
+                        handler: dataHandlerSpy,
+                    }),
                 ]);
             });
         });
@@ -226,7 +226,7 @@ describe('Group Consumer', function () {
         after(function () {
             return Promise.all([
                 producer.end(),
-                consumer.end()
+                consumer.end(),
             ]);
         });
 
@@ -235,17 +235,17 @@ describe('Group Consumer', function () {
                 producer.send({
                     topic: 'kafka-group-consumer-multi-topic-1',
                     partition: 0,
-                    message: { value: 'p01' }
+                    message: { value: 'p01', },
                 }),
                 producer.send({
                     topic: 'kafka-group-consumer-multi-topic-2',
                     partition: 0,
-                    message: { value: 'p02' }
+                    message: { value: 'p02', },
                 }),
                 producer.send({
                     topic: 'kafka-group-consumer-multi-topic-3',
                     partition: 0,
-                    message: { value: 'p03' }
+                    message: { value: 'p03', },
                 }),
             ])
             .delay(200)
@@ -285,25 +285,25 @@ describe('Group Consumer', function () {
         before(function () {
             producer = new Kafka.Producer({
                 requiredAcks: 1,
-                clientId: 'producer'
+                clientId: 'producer',
             });
             firstConsumer = new Kafka.GroupConsumer({
                 groupId: 'group-multi-consumer',
                 idleTimeout: 100,
                 heartbeatTimeout: 100,
-                clientId: 'group-consumer1'
+                clientId: 'group-consumer1',
             });
             secondConsumer = new Kafka.GroupConsumer({
                 groupId: 'group-multi-consumer',
                 idleTimeout: 100,
                 heartbeatTimeout: 100,
-                clientId: 'group-consumer2'
+                clientId: 'group-consumer2',
             });
             thirdConsumer = new Kafka.GroupConsumer({
                 groupId: 'group-multi-consumer',
                 idleTimeout: 100,
                 heartbeatTimeout: 100,
-                clientId: 'group-consumer2'
+                clientId: 'group-consumer2',
             });
             firstDataHandlerSpy = dataHandlerFactory(firstConsumer);
             secondDataHandlerSpy = dataHandlerFactory(secondConsumer);
@@ -315,15 +315,15 @@ describe('Group Consumer', function () {
                 return Promise.all([
                     producer.init(),
                     firstConsumer.init({
-                        subscriptions: ['kafka-group-multi-consumer-topic-1'],
+                        subscriptions: ['kafka-group-multi-consumer-topic-1',],
                         handler: firstDataHandlerSpy,
                     }),
                     secondConsumer.init({
-                        subscriptions: ['kafka-group-multi-consumer-topic-1'],
+                        subscriptions: ['kafka-group-multi-consumer-topic-1',],
                         handler: secondDataHandlerSpy,
                     }),
                     thirdConsumer.init({
-                        subscriptions: ['kafka-group-multi-consumer-topic-1'],
+                        subscriptions: ['kafka-group-multi-consumer-topic-1',],
                         handler: thirdDataHandlerSpy,
                     }),
                 ]);
@@ -350,18 +350,18 @@ describe('Group Consumer', function () {
                 {
                     topic: 'kafka-group-multi-consumer-topic-1',
                     partition: 0,
-                    message: { value: 'p00' }
+                    message: { value: 'p00', },
                 },
                 {
                     topic: 'kafka-group-multi-consumer-topic-1',
                     partition: 1,
-                    message: { value: 'p01' }
+                    message: { value: 'p01', },
                 },
                 {
                     topic: 'kafka-group-multi-consumer-topic-1',
                     partition: 2,
-                    message: { value: 'p02' }
-                }
+                    message: { value: 'p02', },
+                },
             ])
             .delay(400)
             .then(function () {
@@ -385,14 +385,14 @@ describe('Group Consumer', function () {
                 idleTimeout: 100,
                 heartbeatTimeout: 100,
                 logger: {
-                    logFunction: spy
+                    logFunction: spy,
                 },
-                clientId: 'group-consumer4'
+                clientId: 'group-consumer4',
             });
 
             return consumer.init({
-                subscriptions: ['kafka-test-topic'],
-                handler: function () {}
+                subscriptions: ['kafka-test-topic',],
+                handler: function () {},
             })
             .then(function () {
                 spy.reset();
@@ -407,11 +407,11 @@ describe('Group Consumer', function () {
         it('should throw an error when groupId is invalid', function () {
             (function () {
                 var c = new Kafka.GroupConsumer({
-                    groupId: 'bad?group'
+                    groupId: 'bad?group',
                 });
                 return c.init({
-                    subscriptions: ['kafka-test-topic'],
-                    handler: function () {}
+                    subscriptions: ['kafka-test-topic',],
+                    handler: function () {},
                 });
             }).should.throw('Invalid groupId');
         });
