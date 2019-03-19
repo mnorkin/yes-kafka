@@ -1,13 +1,14 @@
 {
     "extends": "eslint:recommended",
     "rules": {
-        "comma-dangle": ["error", "always"]
+        "comma-dangle": ["error", "always"],
+        "indent": ["error", 2]
     },
     "parserOptions": {
         "ecmaVersion": 2017
     },
     "env": {
         "node": true,
-        "mocha": true,
+        "mocha": true
     }
 }
