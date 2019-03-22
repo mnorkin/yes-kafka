@@ -1,5 +1,7 @@
 # yes-kafka
 
+[![Build Status](https://travis-ci.com/mnorkin/yes-kafka.svg?branch=master)](https://travis-ci.com/mnorkin/yes-kafka)
+
 __yes-kafka__ is [Apache Kafka](https://kafka.apache.org) 0.9 client for Node.js with [new unified consumer API](#groupconsumer-new-unified-consumer-api) support.
 
 This is a fork of https://github.com/oleksiyk/kafka and supports high volume of topics
