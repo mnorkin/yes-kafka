@@ -425,9 +425,9 @@ describe('Producer', function () {
         }, { batch: { size: 200, }, }),
       ]);
     })
-        .then(function () {
-            spy.should.have.been.calledTwice; // eslint-disable-line
-        });
+    .then(function () {
+        spy.should.have.been.calledTwice; // eslint-disable-line
+    });
   });
 
   it('should wait up to maxWait time', function () {
@@ -489,10 +489,10 @@ describe('Producer', function () {
           value: '12345',
         },
       })
-            .delay(200)
-            .then(function () {
-                stub.should.have.been.calledTwice; // eslint-disable-line
-            });
+      .delay(200)
+      .then(function () {
+        stub.should.have.been.calledTwice; // eslint-disable-line
+      });
     });
   });
 });
