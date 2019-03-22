@@ -5,6 +5,7 @@
 var crc32   = require('buffer-crc32');
 var Kafka   = require('../lib/index');
 var kafkaTestkit = require('./testkit/kafka');
+var Buffer  = require('safer-buffer').Buffer;
 
 describe('Compression', function () {
   describe('sync', function () {
@@ -79,7 +80,7 @@ describe('Compression', function () {
     });
 
     it('should send/receive with Snappy compression (>32kb)', async () => {
-      const buf = new Buffer(90 * 1024);
+      const buf = Buffer.alloc(90 * 1024)
       const crc = crc32.signed(buf);
 
       dataHandlerSpy.reset();
@@ -230,7 +231,7 @@ describe('Compression', function () {
     });
 
     it('should send/receive with async Snappy compression (>32kb)', async () => {
-      const buf = new Buffer(90 * 1024);
+      const buf = Buffer.alloc(90 * 1024);
       const crc = crc32.signed(buf);
 
       dataHandlerSpy.reset();
@@ -277,7 +278,7 @@ describe('Compression', function () {
     });
 
     it('should send/receive with async Gzip compression (>32kb)', async () => {
-      const buf = new Buffer(90 * 1024);
+      const buf = Buffer.alloc(90 * 1024);
       const crc = crc32.signed(buf);
 
       dataHandlerSpy.reset();
