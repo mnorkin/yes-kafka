@@ -2,7 +2,6 @@
 
 /* global describe, it, before, sinon, after  */
 
-var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
 var _       = require('lodash');
 
@@ -13,12 +12,10 @@ describe('SimpleConsumer', function () {
     var producer;
     var consumer;
 
-    var dataHandlerSpy = sinon.spy(function (messageSet, topic, partition) {
-      return Promise.each(messageSet, function (m) {
-        return consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset, }).then(result => {
-          return result;
-        });
-      });
+    var dataHandlerSpy = sinon.spy(async (messageSet, topic, partition) => {
+      await Promise.all(messageSet.map(async (m) => {
+        return await consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset, })
+      }))
     });
 
     before(function () {
@@ -74,7 +71,7 @@ describe('SimpleConsumer', function () {
         partition: 0,
         message: { value: 'p00', },
       })
-            .delay(500)
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
             .then(function () {
                 /* jshint expr: true */
                 dataHandlerSpy.should.have.been.called; // eslint-disable-line
@@ -100,7 +97,7 @@ describe('SimpleConsumer', function () {
           value: 'p00',
         },
       })
-            .delay(500)
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
             .then(function () {
                 /* jshint expr: true */
                 dataHandlerSpy.should.have.been.called; // eslint-disable-line
@@ -126,7 +123,7 @@ describe('SimpleConsumer', function () {
         partition: 0,
         message: { value: '人人生而自由，在尊嚴和權利上一律平等。', },
       })
-            .delay(500)
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
             .then(function () {
                 /* jshint expr: true */
                 dataHandlerSpy.should.have.been.called; // eslint-disable-line
@@ -155,7 +152,7 @@ describe('SimpleConsumer', function () {
                 .then(function () {
                   consumer.subscriptions['kafka-simple-consumer-topic-1:0'].offset.should.be.eql(offset + 200);
                 })
-                .delay(300)
+                .then(() => new Promise(resolve => setTimeout(resolve, 300)))
                 .then(function () {
                   consumer.subscriptions['kafka-simple-consumer-topic-1:0'].offset.should.be.eql(offset);
                 });
@@ -177,7 +174,7 @@ describe('SimpleConsumer', function () {
             .then(function () {
               return consumer.offset('kafka-simple-consumer-topic-1', 0).then(function (offset) {
                 return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, }, dataHandlerSpy)
-                    .delay(200) // consumer sleep timeout
+                .then(() => new Promise(resolve => setTimeout(resolve, 200))) // consumer sleep timeout
                     .then(function () {
                         dataHandlerSpy.should.have.been.called; // eslint-disable-line
                       dataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(2);
@@ -195,7 +192,7 @@ describe('SimpleConsumer', function () {
                     // ask for maxBytes that is only 1 byte less then required for both last messages
           var maxBytes = 2 * (8 + 4) + maxBytesTestMessagesSize - 1;
           return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, maxBytes: maxBytes, }, dataHandlerSpy)
-                    .delay(300)
+          .then(() => new Promise(resolve => setTimeout(resolve, 300)))
                     .then(function () {
                         /* jshint expr: true */
                         dataHandlerSpy.should.have.been.called; // eslint-disable-line
@@ -219,7 +216,7 @@ describe('SimpleConsumer', function () {
         partition: 0,
         message: { value: 'p001', },
       },])
-            .delay(300)
+      .then(() => new Promise(resolve => setTimeout(resolve, 300)))
             .then(function () {
                 dataHandlerSpy.should.have.been.called; // eslint-disable-line
               mSize = dataHandlerSpy.getCall(0).args[0][0].messageSize;
@@ -231,7 +228,7 @@ describe('SimpleConsumer', function () {
                         // ask for maxBytes that is smaller then size of the first message but enough to receive second message
                   var maxBytes = 8 + 4 + mSize - 1;
                   return consumer.subscribe('kafka-simple-consumer-topic-1', 0, { offset: offset - 2, maxBytes: maxBytes, }, dataHandlerSpy)
-                        .delay(300)
+                  .then(() => new Promise(resolve => setTimeout(resolve, 300)))
                         .then(function () {
                             dataHandlerSpy.should.have.been.calledTwice; // eslint-disable-line
                           dataHandlerSpy.getCall(0).args[0].should.be.an('array').and.have.length(1);
@@ -397,7 +394,7 @@ describe('SimpleConsumer', function () {
           message: { value: 'p00', },
         });
       })
-            .delay(200)
+      .then(() => new Promise(resolve => setTimeout(resolve, 200)))
             .then(function () {
                 spy.should.have.been.called; // eslint-disable-line
             });
@@ -414,7 +411,7 @@ describe('SimpleConsumer', function () {
           message: { value: 'p00', },
         });
       })
-            .delay(200)
+      .then(() => new Promise(resolve => setTimeout(resolve, 200)))
             .then(function () {
                 spy.should.have.been.called; // eslint-disable-line
             });
@@ -476,7 +473,7 @@ describe('SimpleConsumer', function () {
           });
         }),
       ])
-            .delay(500)
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
             .then(function () {
               var topics = [
                 dataHandlerSpy.getCall(0).args[1],

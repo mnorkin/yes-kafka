@@ -2,7 +2,6 @@
 
 /* global describe, it, before, sinon, after  */
 
-var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
 var kafkaTestkit = require('./testkit/kafka');
 
@@ -23,12 +22,12 @@ describe('requiredAcks: 0', function () {
     });
 
     return kafkaTestkit.createTopics(['kafka-require-acks-0-topic',])
-            .then(function () {
-              return Promise.all([
-                producer.init(),
-                consumer.init(),
-              ]);
-            });
+      .then(function () {
+        return Promise.all([
+          producer.init(),
+          consumer.init(),
+        ]);
+      });
   });
 
   after(function () {
@@ -46,7 +45,7 @@ describe('requiredAcks: 0', function () {
         message: { value: 'p00', },
       });
     })
-        .delay(100)
+    .then(() => new Promise(resolve => setTimeout(resolve, 100)))
         .then(function () {
             dataHanlderSpy.should.have.been.called; // eslint-disable-line
           dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
@@ -100,7 +99,7 @@ describe('null and empty', function () {
         message: { value: null, key: null, },
       });
     })
-        .delay(200)
+    .then(() => new Promise(resolve => setTimeout(resolve, 200)))
         .then(function () {
             dataHanlderSpy.should.have.been.called; // eslint-disable-line
           dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
@@ -122,7 +121,7 @@ describe('null and empty', function () {
       partition: 0,
       message: { value: '', key: '', },
     })
-        .delay(100)
+    .then(() => new Promise(resolve => setTimeout(resolve, 100)))
         .then(function () {
             dataHanlderSpy.should.have.been.called; // eslint-disable-line
           dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);

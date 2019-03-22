@@ -4,7 +4,6 @@
 
 var path = require('path');
 var fs = require('fs');
-var Promise = require('bluebird');
 var crc32   = require('buffer-crc32');
 var Kafka   = require('../lib/index');
 var kafkaTestkit = require('./testkit/kafka');

@@ -2,25 +2,24 @@
 
 /* global describe, it, before, after  */
 
-var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
 var _       = require('lodash');
 var kafkaTestkit = require('./testkit/kafka');
 
 var admin;
 
-before(function () {
+before(async () => {
   admin = new Kafka.GroupAdmin({
     clientId: 'admin',
   });
-  return admin.init();
+  await admin.init();
 });
 
-after(function () {
-  return admin.end();
+after(async () => {
+  await admin.end();
 });
 
-describe('Weighted Round Robin Assignment', function () {
+describe('Weighted Round Robin Assignment', () => {
   var KAFKA_TOPIC = 'kafka-strategies-topic';
   var consumers = [
     new Kafka.GroupConsumer({
@@ -37,40 +36,39 @@ describe('Weighted Round Robin Assignment', function () {
     }),
   ];
 
-  before(function () {
-    return kafkaTestkit.createTopics([KAFKA_TOPIC,]).then(function () {
-      return Promise.map(consumers, function (consumer, ind) {
-        return consumer.init({
-          subscriptions: [KAFKA_TOPIC,],
-          metadata: {
-            weight: ind + 1,
-          },
-          strategy: new Kafka.WeightedRoundRobinAssignmentStrategy(),
-          handler: function () {},
-        });
+  before(async () => {
+    await kafkaTestkit.createTopics([KAFKA_TOPIC,])
+
+    await Promise.all(consumers.map(async (consumer, ind) => {
+      await consumer.init({
+        subscriptions: [KAFKA_TOPIC,],
+        metadata: {
+          weight: ind + 1,
+        },
+        strategy: new Kafka.WeightedRoundRobinAssignmentStrategy(),
+        handler: function () {},
       });
-    })
-        .delay(200);
+    }));
+
+    await new Promise(resolve => setTimeout(resolve, 200));
   });
 
-  after(function () {
-    return Promise.map(consumers, function (c) {
-      return c.end();
-    });
+  after(async () => {
+    await Promise.all(consumers.map(async (c) => await c.end() ));
   });
 
-  it('should split partitions according to consumer weight', function () {
-    return admin.describeGroup(consumers[0].options.groupId).then(function (group) {
-      var consumer1 = _.find(group.members, { clientId: 'group-consumer1', });
-      var consumer2 = _.find(group.members, { clientId: 'group-consumer2', });
+  it('should split partitions according to consumer weight', async () => {
+    const group = await admin.describeGroup(consumers[0].options.groupId);
 
-      consumer1.memberAssignment.partitionAssignment[0].partitions.should.be.an('array').and.have.length(1);
-      consumer2.memberAssignment.partitionAssignment[0].partitions.should.be.an('array').and.have.length(2);
-    });
+    var consumer1 = _.find(group.members, { clientId: 'group-consumer1', });
+    var consumer2 = _.find(group.members, { clientId: 'group-consumer2', });
+
+    consumer1.memberAssignment.partitionAssignment[0].partitions.should.be.an('array').and.have.length(1);
+    consumer2.memberAssignment.partitionAssignment[0].partitions.should.be.an('array').and.have.length(2);
   });
 });
 
-describe('Consistent Assignment', function () {
+describe('Consistent Assignment', () => {
   var KAFKA_TOPIC = 'kafka-consistent-assignment-test';
   var consumers = [
     new Kafka.GroupConsumer({
@@ -87,39 +85,38 @@ describe('Consistent Assignment', function () {
     }),
   ];
 
-  before(function () {
-    return kafkaTestkit.createTopics([KAFKA_TOPIC,]).then(function () {
-      return Promise.map(consumers, function (consumer, ind) {
-        return consumer.init({
-          subscriptions: [KAFKA_TOPIC,],
-          metadata: {
-            id: 'id' + ind,
-            weight: 10,
-          },
-          strategy: new Kafka.ConsistentAssignmentStrategy(),
-          handler: function () {},
-        });
+  before(async () => {
+    await kafkaTestkit.createTopics([KAFKA_TOPIC,]);
+
+    await Promise.all(consumers.map(async (consumer, ind,) => {
+      await consumer.init({
+        subscriptions: [KAFKA_TOPIC,],
+        metadata: {
+          id: 'id' + ind,
+          weight: 10,
+        },
+        strategy: new Kafka.ConsistentAssignmentStrategy(),
+        handler: function () {},
       });
-    })
-        .delay(200);
+    }));
+
+    await new Promise(resolve => setTimeout(resolve, 200));
   });
 
-  after(function () {
-    return Promise.map(consumers, function (c) {
-      return c.end();
-    });
+  after(async () => {
+    await Promise.all(consumers.map(async (c) => await c.end()));
   });
 
-  it('should split partitions according to consumer weight', function () {
-    return admin.describeGroup(consumers[0].options.groupId).then(function (group) {
-      var consumer1 = _.find(group.members, { clientId: 'group-consumer1', });
-      var consumer2 = _.find(group.members, { clientId: 'group-consumer2', });
-      var consumer1Partition = consumer1.memberAssignment.partitionAssignment[0].partitions[0];
+  it('should split partitions according to consumer weight', async () => {
+    const group = await admin.describeGroup(consumers[0].options.groupId);
 
-      consumer1.memberAssignment.partitionAssignment[0].partitions.should.have.length(1);
+    var consumer1 = _.find(group.members, { clientId: 'group-consumer1', });
+    var consumer2 = _.find(group.members, { clientId: 'group-consumer2', });
+    var consumer1Partition = consumer1.memberAssignment.partitionAssignment[0].partitions[0];
 
-      consumer2.memberAssignment.partitionAssignment[0].partitions.should.have.length(2);
-      consumer2.memberAssignment.partitionAssignment[0].partitions.should.not.include(consumer1Partition);
-    });
+    consumer1.memberAssignment.partitionAssignment[0].partitions.should.have.length(1);
+
+    consumer2.memberAssignment.partitionAssignment[0].partitions.should.have.length(2);
+    consumer2.memberAssignment.partitionAssignment[0].partitions.should.not.include(consumer1Partition);
   });
 });

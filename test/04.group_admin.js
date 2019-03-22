@@ -2,7 +2,6 @@
 
 /* global describe, it, before, after  */
 
-var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
 var kafkaTestkit = require('./testkit/kafka');
 
@@ -22,16 +21,16 @@ describe('GroupAdmin', function () {
       clientId: 'group-consumer',
     });
     return kafkaTestkit.createTopics(['kafka-admin-topic-1',])
-            .then(function () {
-              return Promise.all([
-                admin.init(),
-                consumer.init({
-                  subscriptions: ['kafka-admin-topic-1',],
-                  metadata: 'consumer-metadata',
-                  handler: function () {},
-                }),
-              ]);
-            });
+      .then(function () {
+        return Promise.all([
+          admin.init(),
+          consumer.init({
+            subscriptions: ['kafka-admin-topic-1',],
+            metadata: 'consumer-metadata',
+            handler: function () {},
+          }),
+        ]);
+      });
   });
 
   after(function () {
@@ -129,16 +128,15 @@ describe('GroupAdmin', function () {
           subscriptions: ['kafka-admin-topic-2',],
           metadata: 'consumer-metadata',
           handler: function (messageSet, topic, partition) {
-            return Promise.each(messageSet, function (m) {
-                            // commit offset
+            return Promise.all(messageSet.map((m) => {
               return consumer.commitOffset(
                 {
                   topic: topic,
                   partition: partition,
                   offset: m.offset,
-                }
-                            );
-            }).then(function () {
+                })
+            }))
+            .then(function () {
                             // All messages consumed,
                             // expecting lag to be 0 at this point
               resolve();

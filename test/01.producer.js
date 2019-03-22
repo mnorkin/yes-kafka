@@ -3,7 +3,6 @@
 /* global describe, it, before, after, sinon, expect  */
 
 var util    = require('util');
-var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
 
 var DefaultPartitioner = Kafka.DefaultPartitioner;
@@ -257,7 +256,7 @@ describe('Producer', function () {
       clientId: 'producer',
     });
     _producer.partitioner.partition = function dummySyncPartitioner(/*topicName, partitions, message*/) {
-      return Promise.delay(100).then(function () {
+      return Promise.resolve().then(() => new Promise(resolve => setTimeout(resolve, 100))).then(function () {
         return 2;
       });
     };
