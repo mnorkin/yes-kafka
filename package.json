@@ -12,7 +12,7 @@
       "email": "maksimn@wix.com"
     }
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "keywords": [
@@ -39,6 +39,7 @@
     "eslint-plugin-react": "^6.10.3",
     "istanbul": "^0.4.2",
     "mocha": "^5.2.0",
+    "release-it": "^10.3.1",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0",
     "snappy": "^6.0.0"
