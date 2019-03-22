@@ -2,16 +2,15 @@
 
 /* global describe, it, before, sinon, after  */
 
-var Promise = require('bluebird');
 var Kafka   = require('../lib/index');
 var _       = require('lodash');
 var kafkaTestkit = require('./testkit/kafka');
 
 function dataHandlerFactory(consumer) {
-  return sinon.spy(function (messageSet, topic, partition) {
-    return Promise.each(messageSet, function (m) {
-      return consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset, });
-    });
+  return sinon.spy(async (messageSet, topic, partition) => {
+    await Promise.all(messageSet.map(async (m) => {
+      await consumer.commitOffset({ topic: topic, partition: partition, offset: m.offset, });
+    }));
   });
 }
 
@@ -167,18 +166,18 @@ describe('Group Consumer', function () {
           message: { value: 'p00', },
         }),
       ])
-            .then(function () {
-              return Promise.all([
-                consumer.offset('kafka-group-consumer-topic-1', 0),
-                consumer.offset('kafka-group-consumer-topic-1', 1),
-                consumer.offset('kafka-group-consumer-topic-1', 2),
-              ]);
-            })
-            .spread(function (offset0, offset1, offset2) {
-              offset0.should.be.a('number').and.be.gt(0);
-              offset1.should.be.a('number').and.be.gt(0);
-              offset2.should.be.a('number').and.be.gt(0);
-            });
+      .then(function () {
+        return Promise.all([
+          consumer.offset('kafka-group-consumer-topic-1', 0),
+          consumer.offset('kafka-group-consumer-topic-1', 1),
+          consumer.offset('kafka-group-consumer-topic-1', 2),
+        ]);
+      })
+      .then(([offset0, offset1, offset2,]) => {
+        offset0.should.be.a('number').and.be.gt(0);
+        offset1.should.be.a('number').and.be.gt(0);
+        offset2.should.be.a('number').and.be.gt(0);
+      })
     });
   });
 
@@ -248,7 +247,7 @@ describe('Group Consumer', function () {
           message: { value: 'p03', },
         }),
       ])
-            .delay(200)
+      .then(() => new Promise(resolve => setTimeout(resolve, 200)))
             .then(function () {
               var topics = [];
               var messages = [];
