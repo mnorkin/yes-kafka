@@ -12,7 +12,7 @@
       "email": "maksimn@wix.com"
     }
   ],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "keywords": [
