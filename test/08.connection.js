@@ -48,7 +48,7 @@ describe('Connection', function () {
       partition: 0,
       message: { value: buf, },
     })
-        .delay(300)
+        .then(() => new Promise(resolve => setTimeout(resolve, 300)))
         .then(function () {
             dataHandlerSpy.should.have.been.called; // eslint-disable-line
           dataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
