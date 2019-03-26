@@ -429,7 +429,7 @@ describe('Producer', function () {
     });
   });
 
-  it('should wait up to maxWait time', async () => {
+  it('should wait up to maxWait time', function () {
     var _producer = new Kafka.Producer({
       clientId: 'producer',
       batch: {
@@ -448,16 +448,16 @@ describe('Producer', function () {
           value: '12345',
         },
       })
-      .then(() => new Promise(resolve => setTimeout(resolve, 100)))
-      .then(function () {
-        return _producer.send({
-          topic: 'kafka-producer-topic-1',
-          partition: 0,
-          message: {
-            value: '12345',
-          },
-        });
-      });
+            .delay(100)
+            .then(function () {
+              return _producer.send({
+                topic: 'kafka-producer-topic-1',
+                partition: 0,
+                message: {
+                  value: '12345',
+                },
+              });
+            });
     })
         .then(function () {
             spy.should.have.been.calledTwice; // eslint-disable-line
@@ -488,7 +488,7 @@ describe('Producer', function () {
           value: '12345',
         },
       })
-      .then(() => new Promise(resolve => setTimeout(resolve, 200)))
+      .delay(200)
       .then(function () {
         stub.should.have.been.calledTwice; // eslint-disable-line
       });

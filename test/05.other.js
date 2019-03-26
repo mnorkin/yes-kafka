@@ -64,10 +64,9 @@ describe('null and empty', function () {
   var producer;
   var consumer;
 
-  var dataHanlderSpy = sinon.spy(function () {
-  });
+  var dataHanlderSpy = sinon.spy(function () {});
 
-  before(async () => {
+  before(function () {
     producer = new Kafka.Producer({
       requiredAcks: 0,
       clientId: 'producer',
@@ -77,70 +76,66 @@ describe('null and empty', function () {
       clientId: 'simple-consumer',
     });
 
-    await kafkaTestkit.createTopics(['kafka-null-and-empty-topic',]);
-
-    await Promise.all([
-      producer.init(),
-      consumer.init(),
-    ]);
+    return kafkaTestkit.createTopics(['kafka-null-and-empty-topic',]).then(function () {
+      return Promise.all([
+        producer.init(),
+        consumer.init(),
+      ]);
+    });
   });
 
-  beforeEach(() => {
-    dataHanlderSpy.reset();
-  })
-
-  after(async () => {
-    await Promise.all([
+  after(function () {
+    return Promise.all([
       producer.end(),
       consumer.end(),
     ]);
   });
 
-  it('should send/receive null byte string', async () => {
-    await consumer.subscribe('kafka-null-and-empty-topic', 0, dataHanlderSpy);
-    await producer.send({
-      topic: 'kafka-null-and-empty-topic',
-      partition: 0,
-      message: { value: null, key: null, },
-    });
+  it('should send/receive null byte string', function () {
+    return consumer.subscribe('kafka-null-and-empty-topic', 0, dataHanlderSpy).then(function () {
+      return producer.send({
+        topic: 'kafka-null-and-empty-topic',
+        partition: 0,
+        message: { value: null, key: null, },
+      });
+    })
+    .then(() => new Promise(resolve => setTimeout(resolve, 200)))
+        .then(function () {
+            dataHanlderSpy.should.have.been.called; // eslint-disable-line
+          dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+          dataHanlderSpy.lastCall.args[1].should.be.a('string');
+          dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
+          dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
 
-    await new Promise(resolve => setTimeout(resolve, 200));
-
-    dataHanlderSpy.should.have.been.called; // eslint-disable-line
-    dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-    dataHanlderSpy.lastCall.args[1].should.be.a('string');
-    dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
-    dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
-
-    dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
-    dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value', null);
-    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key', null);
+          dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
+          dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value', null);
+          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key', null);
+        });
   });
 
-  it('should send/receive empty byte string', async () => {
-    await consumer.subscribe('kafka-null-and-empty-topic', 0, dataHanlderSpy);
-
-    await producer.send({
+  it('should send/receive empty byte string', function () {
+    dataHanlderSpy.reset();
+    return producer.send({
       topic: 'kafka-null-and-empty-topic',
       partition: 0,
       message: { value: '', key: '', },
-    });
+    })
+    .then(() => new Promise(resolve => setTimeout(resolve, 100)))
+        .then(function () {
+            dataHanlderSpy.should.have.been.called; // eslint-disable-line
+          dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+          dataHanlderSpy.lastCall.args[1].should.be.a('string');
+          dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
+          dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
 
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    dataHanlderSpy.should.have.been.called; // eslint-disable-line
-    dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-    dataHanlderSpy.lastCall.args[1].should.be.a('string');
-    dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
-    dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
-
-    dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
-    dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value');
-    dataHanlderSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('');
-    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key');
-    dataHanlderSpy.lastCall.args[0][0].message.key.toString('utf8').should.be.eql('');
+          dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
+          dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value');
+          dataHanlderSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('');
+          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key');
+          dataHanlderSpy.lastCall.args[0][0].message.key.toString('utf8').should.be.eql('');
+        });
   });
 });
 
@@ -230,8 +225,8 @@ describe('brokerRedirection', function () {
       },
     });
 
-    // If the init is succesful, then we remapped the bad
-    // broker name.
+        // If the init is succesful, then we remapped the bad
+        // broker name.
     return producer.init();
   });
 });
