@@ -75,7 +75,7 @@ describe('Group Consumer', function () {
         partition: 0,
         message: { value: 'p00', },
       })
-      .then(() => new Promise(resolve => setTimeout(resolve, 200)))
+            .delay(200)
             .then(function () {
                 /* jshint expr: true */
                 dataHandlerSpy.should.have.been.called; //eslint-disable-line
@@ -362,7 +362,7 @@ describe('Group Consumer', function () {
           message: { value: 'p02', },
         },
       ])
-            .then(() => new Promise(resolve => setTimeout(resolve, 400)))
+            .delay(400)
             .then(function () {
                 /* jshint expr: true */
                 firstDataHandlerSpy.should.have.been.calledOnce; //eslint-disable-line
