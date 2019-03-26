@@ -11,7 +11,7 @@ describe('requiredAcks: 0', function () {
 
   var dataHanlderSpy = sinon.spy(function () {});
 
-  before(function () {
+  before(async () => {
     producer = new Kafka.Producer({
       requiredAcks: 0,
       clientId: 'producer',
@@ -21,42 +21,40 @@ describe('requiredAcks: 0', function () {
       clientId: 'simple-consumer',
     });
 
-    return kafkaTestkit.createTopics(['kafka-require-acks-0-topic',])
-      .then(function () {
-        return Promise.all([
-          producer.init(),
-          consumer.init(),
-        ]);
-      });
+    await kafkaTestkit.createTopics(['kafka-require-acks-0-topic',]);
+
+    await Promise.all([
+      producer.init(),
+      consumer.init(),
+    ]);
   });
 
-  after(function () {
-    return Promise.all([
+  after(async () => {
+    await Promise.all([
       producer.end(),
       consumer.end(),
     ]);
   });
 
-  it('should send/receive messages', function () {
-    return consumer.subscribe('kafka-require-acks-0-topic', 0, dataHanlderSpy).then(function () {
-      return producer.send({
-        topic: 'kafka-require-acks-0-topic',
-        partition: 0,
-        message: { value: 'p00', },
-      });
-    })
-    .then(() => new Promise(resolve => setTimeout(resolve, 100)))
-        .then(function () {
-            dataHanlderSpy.should.have.been.called; // eslint-disable-line
-          dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-          dataHanlderSpy.lastCall.args[1].should.be.a('string', 'kafka-require-acks-0-topic');
-          dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
+  it('should send/receive messages', async () => {
+    await consumer.subscribe('kafka-require-acks-0-topic', 0, dataHanlderSpy);
+    await producer.send({
+      topic: 'kafka-require-acks-0-topic',
+      partition: 0,
+      message: { value: 'p00', },
+    });
 
-          dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
-          dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value');
-          dataHanlderSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('p00');
-        });
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    dataHanlderSpy.should.have.been.called; // eslint-disable-line
+    dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+    dataHanlderSpy.lastCall.args[1].should.be.a('string', 'kafka-require-acks-0-topic');
+    dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
+
+    dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
+    dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value');
+    dataHanlderSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('p00');
   });
 });
 
@@ -66,7 +64,7 @@ describe('null and empty', function () {
 
   var dataHanlderSpy = sinon.spy(function () {});
 
-  before(function () {
+  before(async () => {
     producer = new Kafka.Producer({
       requiredAcks: 0,
       clientId: 'producer',
@@ -76,66 +74,69 @@ describe('null and empty', function () {
       clientId: 'simple-consumer',
     });
 
-    return kafkaTestkit.createTopics(['kafka-null-and-empty-topic',]).then(function () {
-      return Promise.all([
-        producer.init(),
-        consumer.init(),
-      ]);
-    });
+    await kafkaTestkit.createTopics(['kafka-null-and-empty-topic',]);
+
+    await Promise.all([
+      producer.init(),
+      consumer.init(),
+    ]);
   });
 
-  after(function () {
-    return Promise.all([
+  beforeEach(() => {
+    dataHanlderSpy.reset();
+  });
+
+  after(async () => {
+    await Promise.all([
       producer.end(),
       consumer.end(),
     ]);
   });
 
-  it('should send/receive null byte string', function () {
-    return consumer.subscribe('kafka-null-and-empty-topic', 0, dataHanlderSpy).then(function () {
-      return producer.send({
-        topic: 'kafka-null-and-empty-topic',
-        partition: 0,
-        message: { value: null, key: null, },
-      });
-    })
-    .then(() => new Promise(resolve => setTimeout(resolve, 200)))
-        .then(function () {
-            dataHanlderSpy.should.have.been.called; // eslint-disable-line
-          dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-          dataHanlderSpy.lastCall.args[1].should.be.a('string');
-          dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
-          dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
+  it('should send/receive null byte string', async () => {
+    await consumer.subscribe('kafka-null-and-empty-topic', 0, dataHanlderSpy);
+    await producer.send({
+      topic: 'kafka-null-and-empty-topic',
+      partition: 0,
+      message: { value: null, key: null, },
+    });
 
-          dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
-          dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value', null);
-          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key', null);
-        });
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    dataHanlderSpy.should.have.been.called; // eslint-disable-line
+    dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+    dataHanlderSpy.lastCall.args[1].should.be.a('string');
+    dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
+    dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
+
+    dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
+    dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value', null);
+    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key', null);
   });
 
-  it('should send/receive empty byte string', function () {
-    dataHanlderSpy.reset();
-    return producer.send({
+  it('should send/receive empty byte string', async () => {
+    await consumer.subscribe('kafka-null-and-empty-topic', 0, dataHanlderSpy);
+    await producer.send({
       topic: 'kafka-null-and-empty-topic',
       partition: 0,
       message: { value: '', key: '', },
     })
-    .then(() => new Promise(resolve => setTimeout(resolve, 100)))
-        .then(function () {
-            dataHanlderSpy.should.have.been.called; // eslint-disable-line
-          dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-          dataHanlderSpy.lastCall.args[1].should.be.a('string');
-          dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
-          dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
 
-          dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
-          dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value');
-          dataHanlderSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('');
-          dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key');
-          dataHanlderSpy.lastCall.args[0][0].message.key.toString('utf8').should.be.eql('');
-        });
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    dataHanlderSpy.should.have.been.called; // eslint-disable-line
+    dataHanlderSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+    dataHanlderSpy.lastCall.args[1].should.be.a('string');
+    dataHanlderSpy.lastCall.args[1].should.be.eql('kafka-null-and-empty-topic');
+    dataHanlderSpy.lastCall.args[2].should.be.a('number', 0);
+
+    dataHanlderSpy.lastCall.args[0][0].should.be.an('object');
+    dataHanlderSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('value');
+    dataHanlderSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('');
+    dataHanlderSpy.lastCall.args[0][0].message.should.have.property('key');
+    dataHanlderSpy.lastCall.args[0][0].message.key.toString('utf8').should.be.eql('');
   });
 });
 
@@ -148,7 +149,7 @@ describe('connectionString', function () {
 });
 
 describe('brokerRedirection', function () {
-  it('Should execute a function passed for direction', function () {
+  it('Should execute a function passed for direction', async () => {
     var latched = false;
     var producer = new Kafka.Producer({
       brokerRedirection: function (host, port) {
@@ -160,13 +161,12 @@ describe('brokerRedirection', function () {
       },
     });
 
-    return producer.init()
-            .then(function () {
-              latched.should.eql(true);
-            });
+    await producer.init();
+
+    latched.should.eql(true);
   });
 
-  it('Should apply function remapping', function () {
+  it('Should apply function remapping', async () => {
     var latched = false;
     var producer = new Kafka.Producer({
       connectionString: 'does-not-exist:9092',
@@ -180,15 +180,13 @@ describe('brokerRedirection', function () {
       },
     });
 
-        // If the init is succesful, then we remapped the bad
-        // broker name.
-    return producer.init()
-            .then(function () {
-              latched.should.eql(true);
-            });
+    // If the init is succesful, then we remapped the bad
+    // broker name.
+    await producer.init();
+    latched.should.eql(true);
   });
 
-  it('Should apply lookup remap (host:port)', function () {
+  it('Should apply lookup remap (host:port)', async () => {
     var producer = new Kafka.Producer({
       connectionString: 'does-not-exist:9092',
       ssl: false,
@@ -197,12 +195,12 @@ describe('brokerRedirection', function () {
       },
     });
 
-        // If the init is succesful, then we remapped the bad
-        // broker name.
-    return producer.init();
+    // If the init is succesful, then we remapped the bad
+    // broker name.
+    await producer.init();
   });
 
-  it('Should apply lookup remap (kafka://host:port)', function () {
+  it('Should apply lookup remap (kafka://host:port)', async () => {
     var producer = new Kafka.Producer({
       connectionString: 'does-not-exist:9092',
       ssl: false,
@@ -211,12 +209,12 @@ describe('brokerRedirection', function () {
       },
     });
 
-        // If the init is succesful, then we remapped the bad
-        // broker name.
-    return producer.init();
+    // If the init is succesful, then we remapped the bad
+    // broker name.
+    await producer.init();
   });
 
-  it('Should apply lookup remap prefixed with Kafka', function () {
+  it('Should apply lookup remap prefixed with Kafka', async () => {
     var producer = new Kafka.Producer({
       connectionString: 'does-not-exist:9092',
       ssl: false,
@@ -225,8 +223,8 @@ describe('brokerRedirection', function () {
       },
     });
 
-        // If the init is succesful, then we remapped the bad
-        // broker name.
-    return producer.init();
+    // If the init is succesful, then we remapped the bad
+    // broker name.
+    await producer.init();
   });
 });
