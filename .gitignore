@@ -2,3 +2,4 @@
 /coverage
 *.swp
 package-lock.json
+/lib

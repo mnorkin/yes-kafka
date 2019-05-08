@@ -44,7 +44,8 @@
     "release-it": "^10.3.1",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0",
-    "snappy": "^6.0.0"
+    "snappy": "^6.0.0",
+    "typescript": "^3.4.5"
   },
   "bugs": {
     "url": "https://github.com/mnorkin/yes-kafka/issues"
@@ -52,6 +53,7 @@
   "scripts": {
     "eslint": "eslint .",
     "pretest": "npm run eslint",
+    "build": "tsc",
     "test": "mocha --timeout 20000 \"test/**/*.js\""
   },
   "repository": {
