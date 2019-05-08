@@ -52,7 +52,7 @@
   },
   "scripts": {
     "eslint": "eslint .",
-    "pretest": "npm run eslint",
+    "pretest": "npm run eslint && npm run build",
     "build": "tsc",
     "test": "mocha --timeout 20000 \"test/**/*.js\""
   },
