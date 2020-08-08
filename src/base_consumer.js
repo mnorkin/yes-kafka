@@ -40,14 +40,14 @@ BaseConsumer.prototype._fetch = function () {
   return Promise.try(function () {
     var data = _(self.subscriptions).reject({ paused: true, }).values().groupBy('leader').mapValues(function (v) {
       return _(v)
-                .groupBy('topic')
-                .map(function (p, t) {
-                  return {
-                    topicName: t,
-                    partitions: p,
-                  };
-                })
-                .value();
+        .groupBy('topic')
+        .map(function (p, t) {
+          return {
+            topicName: t,
+            partitions: p,
+          };
+        })
+        .value();
     }).value();
 
     if (_.isEmpty(data)) {
@@ -65,13 +65,13 @@ BaseConsumer.prototype._fetch = function () {
       if (p.messageSet.length) {
         s.paused = true;
         return s.handler(p.messageSet, p.topic, p.partition, p.highwaterMarkOffset)
-                    .catch(function (err) {
-                      self.client.warn('Handler for', p.topic + ':' + p.partition, 'failed with', err);
-                    })
-                    .finally(function () {
-                      s.paused = false;
-                      s.offset = _.last(p.messageSet).offset + 1; // advance offset position
-                    });
+          .catch(function (err) {
+            self.client.warn('Handler for', p.topic + ':' + p.partition, 'failed with', err);
+          })
+          .finally(function () {
+            s.paused = false;
+            s.offset = _.last(p.messageSet).offset + 1; // advance offset position
+          });
       }
       return null;
     }, { concurrency: self.options.handlerConcurrency, });
@@ -98,7 +98,7 @@ BaseConsumer.prototype._partitionError = function (err, topic, partition) {
     });
   } else if (err.code === 'MessageSizeTooLarge') {
     self.client.warn('Received MessageSizeTooLarge error for', topic + ':' + partition,
-            'which means maxBytes option value (' + s.maxBytes + ') is too small to fit the message at offset', s.offset);
+      'which means maxBytes option value (' + s.maxBytes + ') is too small to fit the message at offset', s.offset);
     s.offset += 1;
     return null;
     /* istanbul ignore next */
@@ -125,9 +125,9 @@ BaseConsumer.prototype._updateSubscription = function (topic, partition) {
     var s = self.subscriptions[topic + ':' + partition];
 
     return self.subscribe(topic, partition, s.offset !== undefined ? { offset: s.offset, } : s.options, s.handler)
-        .catch(function (err) {
-          self.client.error('Failed to re-subscribe to', topic + ':' + partition, err);
-        });
+      .catch(function (err) {
+        self.client.error('Failed to re-subscribe to', topic + ':' + partition, err);
+      });
   })
     .tap(function () {
       self.idleTimeout = self.options.idleTimeout;
@@ -214,16 +214,16 @@ BaseConsumer.prototype.subscribe = function (topic, partitions, options, handler
         return _subscribe(partition, leader, offset);
       });
     })
-        .catch({ code: 'LeaderNotAvailable', }, function () {
-            // these subscriptions will be retried on each _fetch()
-          self.subscriptions[topic + ':' + partition] = {
-            topic: topic,
-            partition: partition,
-            options: options,
-            leader: -1,
-            handler: handler,
-          };
-        });
+      .catch({ code: 'LeaderNotAvailable', }, function () {
+        // these subscriptions will be retried on each _fetch()
+        self.subscriptions[topic + ':' + partition] = {
+          topic: topic,
+          partition: partition,
+          options: options,
+          leader: -1,
+          handler: handler,
+        };
+      });
   });
 };
 

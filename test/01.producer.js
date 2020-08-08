@@ -32,9 +32,9 @@ describe('Producer', function () {
 
   it('required methods', function () {
     return producer.should
-            .respondTo('init')
-            .respondTo('send')
-            .respondTo('end');
+      .respondTo('init')
+      .respondTo('send')
+      .respondTo('end');
   });
 
   it('should create producer with default options', function () {
@@ -194,17 +194,17 @@ describe('Producer', function () {
         },
       });
     })
-        .then(function () {
+      .then(function () {
             partitionerSpy.should.have.been.called; // eslint-disable-line
-          partitionerSpy.lastCall.args[0].should.be.a('string').that.is.eql('kafka-producer-topic-1');
-          partitionerSpy.lastCall.args[1].should.be.an('array').and.have.length(3);
-          partitionerSpy.lastCall.args[1][0].should.be.an('object');
-          partitionerSpy.lastCall.args[1][0].should.have.property('partitionId').that.is.a('number');
-          partitionerSpy.lastCall.args[1][0].should.have.property('error').that.is.eql(null);
-          partitionerSpy.lastCall.args[1][0].should.have.property('leader').that.is.a('number');
-          partitionerSpy.lastCall.args[1][0].should.have.property('replicas').that.is.an('array');
-          partitionerSpy.lastCall.args[1][0].should.have.property('isr').that.is.an('array');
-        });
+        partitionerSpy.lastCall.args[0].should.be.a('string').that.is.eql('kafka-producer-topic-1');
+        partitionerSpy.lastCall.args[1].should.be.an('array').and.have.length(3);
+        partitionerSpy.lastCall.args[1][0].should.be.an('object');
+        partitionerSpy.lastCall.args[1][0].should.have.property('partitionId').that.is.a('number');
+        partitionerSpy.lastCall.args[1][0].should.have.property('error').that.is.eql(null);
+        partitionerSpy.lastCall.args[1][0].should.have.property('leader').that.is.a('number');
+        partitionerSpy.lastCall.args[1][0].should.have.property('replicas').that.is.an('array');
+        partitionerSpy.lastCall.args[1][0].should.have.property('isr').that.is.an('array');
+      });
   });
 
   it('should throw when partitioner is not a DefaultPartitioner', function () {
@@ -241,14 +241,14 @@ describe('Producer', function () {
         },
       });
     })
-        .then(function (result) {
-          result.should.be.an('array').and.have.length(1);
-          result[0].should.be.an('object');
-          result[0].should.have.property('topic', 'kafka-producer-topic-1');
-          result[0].should.have.property('partition', 1);
-          result[0].should.have.property('offset').that.is.a('number');
-          result[0].should.have.property('error', null);
-        });
+      .then(function (result) {
+        result.should.be.an('array').and.have.length(1);
+        result[0].should.be.an('object');
+        result[0].should.have.property('topic', 'kafka-producer-topic-1');
+        result[0].should.have.property('partition', 1);
+        result[0].should.have.property('offset').that.is.a('number');
+        result[0].should.have.property('error', null);
+      });
   });
 
   it('should determine topic partition using async partitioner function', function () {
@@ -268,14 +268,14 @@ describe('Producer', function () {
         },
       });
     })
-        .then(function (result) {
-          result.should.be.an('array').and.have.length(1);
-          result[0].should.be.an('object');
-          result[0].should.have.property('topic', 'kafka-producer-topic-1');
-          result[0].should.have.property('partition', 2);
-          result[0].should.have.property('offset').that.is.a('number');
-          result[0].should.have.property('error', null);
-        });
+      .then(function (result) {
+        result.should.be.an('array').and.have.length(1);
+        result[0].should.be.an('object');
+        result[0].should.have.property('topic', 'kafka-producer-topic-1');
+        result[0].should.have.property('partition', 2);
+        result[0].should.have.property('offset').that.is.a('number');
+        result[0].should.have.property('error', null);
+      });
   });
 
   it('should return error for unknown topic', function () {
@@ -294,7 +294,7 @@ describe('Producer', function () {
         },
       });
     })
-        .should.eventually.be.rejectedWith('This request is for a topic or partition that does not exist on this broker.');
+      .should.eventually.be.rejectedWith('This request is for a topic or partition that does not exist on this broker.');
   });
 
   it('should group messages by global batch.size', function () {
@@ -325,9 +325,9 @@ describe('Producer', function () {
         }),
       ]);
     })
-        .then(function () {
+      .then(function () {
             spy.should.have.been.calledOnce; // eslint-disable-line
-        });
+      });
   });
 
   it('should not group messages with size > batch.size', function () {
@@ -358,9 +358,9 @@ describe('Producer', function () {
         }),
       ]);
     })
-        .then(function () {
+      .then(function () {
             spy.should.have.been.calledTwice; // eslint-disable-line
-        });
+      });
   });
 
   it('should group messages by batch.size in options', function () {
@@ -391,9 +391,9 @@ describe('Producer', function () {
         }, { batch: { size: 10, }, }),
       ]);
     })
-        .then(function () {
+      .then(function () {
             spy.should.have.been.calledOnce; // eslint-disable-line
-        });
+      });
   });
 
   it('should not group messages with different options', function () {
@@ -424,9 +424,9 @@ describe('Producer', function () {
         }, { batch: { size: 200, }, }),
       ]);
     })
-    .then(function () {
+      .then(function () {
         spy.should.have.been.calledTwice; // eslint-disable-line
-    });
+      });
   });
 
   it('should wait up to maxWait time', function () {
@@ -448,20 +448,20 @@ describe('Producer', function () {
           value: '12345',
         },
       })
-            .delay(100)
-            .then(function () {
-              return _producer.send({
-                topic: 'kafka-producer-topic-1',
-                partition: 0,
-                message: {
-                  value: '12345',
-                },
-              });
-            });
-    })
+        .delay(100)
         .then(function () {
-            spy.should.have.been.calledTwice; // eslint-disable-line
+          return _producer.send({
+            topic: 'kafka-producer-topic-1',
+            partition: 0,
+            message: {
+              value: '12345',
+            },
+          });
         });
+    })
+      .then(function () {
+            spy.should.have.been.calledTwice; // eslint-disable-line
+      });
   });
 
   it('should retry on send failure', function () {
@@ -488,10 +488,10 @@ describe('Producer', function () {
           value: '12345',
         },
       })
-      .delay(200)
-      .then(function () {
+        .delay(200)
+        .then(function () {
         stub.should.have.been.calledTwice; // eslint-disable-line
-      });
+        });
     });
   });
 });

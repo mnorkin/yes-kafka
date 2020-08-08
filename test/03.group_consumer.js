@@ -60,13 +60,13 @@ describe('Group Consumer', function () {
 
     it('require methods', function () {
       return consumer.should
-                .respondTo('init')
-                .respondTo('subscribe')
-                .respondTo('offset')
-                .respondTo('unsubscribe')
-                .respondTo('commitOffset')
-                .respondTo('fetchOffset')
-                .respondTo('end');
+        .respondTo('init')
+        .respondTo('subscribe')
+        .respondTo('offset')
+        .respondTo('unsubscribe')
+        .respondTo('commitOffset')
+        .respondTo('fetchOffset')
+        .respondTo('end');
     });
 
     it('should receive new messages', function () {
@@ -75,19 +75,19 @@ describe('Group Consumer', function () {
         partition: 0,
         message: { value: 'p00', },
       })
-            .delay(200)
-            .then(function () {
-                /* jshint expr: true */
+        .delay(200)
+        .then(function () {
+          /* jshint expr: true */
                 dataHandlerSpy.should.have.been.called; //eslint-disable-line
-              dataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-              dataHandlerSpy.lastCall.args[1].should.be.a('string', 'kafka-group-consumer-topic-1');
-              dataHandlerSpy.lastCall.args[2].should.be.a('number', 0);
+          dataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+          dataHandlerSpy.lastCall.args[1].should.be.a('string', 'kafka-group-consumer-topic-1');
+          dataHandlerSpy.lastCall.args[2].should.be.a('number', 0);
 
-              dataHandlerSpy.lastCall.args[0][0].should.be.an('object');
-              dataHandlerSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-              dataHandlerSpy.lastCall.args[0][0].message.should.have.property('value');
-              dataHandlerSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('p00');
-            });
+          dataHandlerSpy.lastCall.args[0][0].should.be.an('object');
+          dataHandlerSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+          dataHandlerSpy.lastCall.args[0][0].message.should.have.property('value');
+          dataHandlerSpy.lastCall.args[0][0].message.value.toString('utf8').should.be.eql('p00');
+        });
     });
 
     it('should be able to commit offsets', function () {
@@ -166,18 +166,18 @@ describe('Group Consumer', function () {
           message: { value: 'p00', },
         }),
       ])
-      .then(function () {
-        return Promise.all([
-          consumer.offset('kafka-group-consumer-topic-1', 0),
-          consumer.offset('kafka-group-consumer-topic-1', 1),
-          consumer.offset('kafka-group-consumer-topic-1', 2),
-        ]);
-      })
-      .then(([offset0, offset1, offset2,]) => {
-        offset0.should.be.a('number').and.be.gt(0);
-        offset1.should.be.a('number').and.be.gt(0);
-        offset2.should.be.a('number').and.be.gt(0);
-      })
+        .then(function () {
+          return Promise.all([
+            consumer.offset('kafka-group-consumer-topic-1', 0),
+            consumer.offset('kafka-group-consumer-topic-1', 1),
+            consumer.offset('kafka-group-consumer-topic-1', 2),
+          ]);
+        })
+        .then(([offset0, offset1, offset2,]) => {
+          offset0.should.be.a('number').and.be.gt(0);
+          offset1.should.be.a('number').and.be.gt(0);
+          offset2.should.be.a('number').and.be.gt(0);
+        })
     });
   });
 
@@ -247,28 +247,28 @@ describe('Group Consumer', function () {
           message: { value: 'p03', },
         }),
       ])
-      .then(() => new Promise(resolve => setTimeout(resolve, 200)))
-            .then(function () {
-              var topics = [];
-              var messages = [];
+        .then(() => new Promise(resolve => setTimeout(resolve, 200)))
+        .then(function () {
+          var topics = [];
+          var messages = [];
                 dataHandlerSpy.should.have.been.calledThrice; //eslint-disable-line
-              topics = [
-                dataHandlerSpy.getCall(0).args[1],
-                dataHandlerSpy.getCall(1).args[1],
-                dataHandlerSpy.getCall(2).args[1],
-              ];
-              messages = [
-                dataHandlerSpy.getCall(0).args[0][0].message.value.toString('utf8'),
-                dataHandlerSpy.getCall(1).args[0][0].message.value.toString('utf8'),
-                dataHandlerSpy.getCall(2).args[0][0].message.value.toString('utf8'),
-              ];
-              topics.should.include('kafka-group-consumer-multi-topic-1');
-              messages.should.include('p01');
-              topics.should.include('kafka-group-consumer-multi-topic-2');
-              messages.should.include('p02');
-              topics.should.include('kafka-group-consumer-multi-topic-3');
-              messages.should.include('p03');
-            });
+          topics = [
+            dataHandlerSpy.getCall(0).args[1],
+            dataHandlerSpy.getCall(1).args[1],
+            dataHandlerSpy.getCall(2).args[1],
+          ];
+          messages = [
+            dataHandlerSpy.getCall(0).args[0][0].message.value.toString('utf8'),
+            dataHandlerSpy.getCall(1).args[0][0].message.value.toString('utf8'),
+            dataHandlerSpy.getCall(2).args[0][0].message.value.toString('utf8'),
+          ];
+          topics.should.include('kafka-group-consumer-multi-topic-1');
+          messages.should.include('p01');
+          topics.should.include('kafka-group-consumer-multi-topic-2');
+          messages.should.include('p02');
+          topics.should.include('kafka-group-consumer-multi-topic-3');
+          messages.should.include('p03');
+        });
     });
   });
 
@@ -362,16 +362,16 @@ describe('Group Consumer', function () {
           message: { value: 'p02', },
         },
       ])
-            .delay(400)
-            .then(function () {
-                /* jshint expr: true */
+        .delay(400)
+        .then(function () {
+          /* jshint expr: true */
                 firstDataHandlerSpy.should.have.been.calledOnce; //eslint-disable-line
-              firstDataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+          firstDataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
                 secondDataHandlerSpy.should.have.been.calledOnce; //eslint-disable-line
-              secondDataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+          secondDataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
                 thirdDataHandlerSpy.should.have.been.calledOnce; //eslint-disable-line
-              thirdDataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-            });
+          thirdDataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+        });
     });
   });
 
@@ -393,14 +393,14 @@ describe('Group Consumer', function () {
         subscriptions: ['kafka-test-topic',],
         handler: function () {},
       })
-            .then(function () {
-              spy.reset();
-              return consumer.end();
-            })
-            .then(function () {
-                /* jshint expr: true */
+        .then(function () {
+          spy.reset();
+          return consumer.end();
+        })
+        .then(function () {
+          /* jshint expr: true */
                 spy.should.not.have.been.called; //eslint-disable-line
-            });
+        });
     });
 
     it('should throw an error when groupId is invalid', function () {

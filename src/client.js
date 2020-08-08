@@ -21,9 +21,9 @@ function Client(options) {
     ssl: {
       cert: process.env.KAFKA_CLIENT_CERT,
       key: process.env.KAFKA_CLIENT_CERT_KEY,
-            // secureProtocol: 'TLSv1_method',
+      // secureProtocol: 'TLSv1_method',
       rejectUnauthorized: false,
-            // ciphers: 'DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:AES128-SHA256:AES128-SHA:AES256-SHA256:AES256-SHA:RC4-SHA',
+      // ciphers: 'DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:AES128-SHA256:AES128-SHA:AES256-SHA256:AES256-SHA:RC4-SHA',
       ca: process.env.KAFKA_CLIENT_CA,
     },
     asyncCompression: true,
@@ -45,7 +45,7 @@ function Client(options) {
 
   logger = new Logger(self.options.logger);
 
-    // prepend clientId argument
+  // prepend clientId argument
   ['log', 'debug', 'error', 'warn', 'trace',].forEach(function (m) {
     self[m] = _.bind(logger[m], logger, self.options.clientId);
   });
@@ -54,7 +54,7 @@ function Client(options) {
     bufferSize: 256 * 1024,
   });
 
-    // client metadata
+  // client metadata
   self.initialBrokers = []; // based on options.connectionString, used for metadata requests
   self.brokerConnections = {};
   self.topicMetadata = {};
@@ -62,7 +62,7 @@ function Client(options) {
 
   self.correlationId = 0;
 
-    // group metadata
+  // group metadata
   self.groupCoordinators = {};
 
   self._updateTopicMetadata_running = {};
@@ -80,8 +80,8 @@ function _mapTopics(topics) {
         partition: p.partition,
       },
       _.omit(p, 'partition')
-    /*function (_a, b) {if (b instanceof Buffer) {return b;}}*/) // fix for lodash _merge in Node v4: https://github.com/lodash/lodash/issues/1453
-    );
+        /*function (_a, b) {if (b instanceof Buffer) {return b;}}*/) // fix for lodash _merge in Node v4: https://github.com/lodash/lodash/issues/1453
+      );
     });
     return;
   }, []).value();
@@ -90,7 +90,7 @@ function _mapTopics(topics) {
 Client.prototype.init = function () {
   var self = this, p = Promise.resolve(), readFile = Promise.promisify(fs.readFile);
 
-    // deprecated but backward compatible ssl cert/key options
+  // deprecated but backward compatible ssl cert/key options
   if (self.options.ssl.certFile && self.options.ssl.keyFile) {
     self.options.ssl.cert = self.options.ssl.certFile;
     self.options.ssl.key = self.options.ssl.keyFile;
@@ -108,10 +108,10 @@ Client.prototype.init = function () {
         readFile(self.options.ssl.cert),
         readFile(self.options.ssl.key),
       ])
-      .spread(function (cert, key) {
-        self.options.ssl.cert = cert;
-        self.options.ssl.key = key;
-      });
+        .spread(function (cert, key) {
+          self.options.ssl.cert = cert;
+          self.options.ssl.key = key;
+        });
     }
   }
 
@@ -137,14 +137,14 @@ Client.prototype.init = function () {
       throw new Error('No initial hosts to connect');
     }
   })
-  .then(() => {
-    return Promise.map(self.initialBrokers, function (c) {
-      return promiseRetry((retry, number) => {
-        self.debug(`Error connecting to kafka cluster, retrying ${number}`);
-        return c.connect().catch(retry);
-      })
+    .then(() => {
+      return Promise.map(self.initialBrokers, function (c) {
+        return promiseRetry((retry, number) => {
+          self.debug(`Error connecting to kafka cluster, retrying ${number}`);
+          return c.connect().catch(retry);
+        })
+      });
     });
-  });
 };
 
 Client.prototype._createConnection = function (host, port) {
@@ -167,16 +167,16 @@ Client.prototype.end = function () {
   self.finished = true;
 
   return Promise.map(
-        Array.prototype.concat(self.initialBrokers, _.values(self.brokerConnections), _.values(self.groupCoordinators)),
-        function (c) {
-          return c.close();
-        });
+    Array.prototype.concat(self.initialBrokers, _.values(self.brokerConnections), _.values(self.groupCoordinators)),
+    function (c) {
+      return c.close();
+    });
 };
 
 Client.prototype.parseHostString = function (hostString) {
   var hostStr = hostString.trim(), parsed;
 
-    // Prepend the protocol, if required
+  // Prepend the protocol, if required
   if (!/^([a-z+]+:)?\/\//.test(hostStr)) {
     hostStr = 'kafka://' + hostStr;
   }
@@ -192,7 +192,7 @@ Client.prototype.checkBrokerRedirect = function (host, port) {
   var fullName, fullNameProtocol;
   var redirect = this.options.brokerRedirection;
 
-    // No remapper
+  // No remapper
   if (!redirect) {
     return {
       host: host,
@@ -200,18 +200,18 @@ Client.prototype.checkBrokerRedirect = function (host, port) {
     };
   }
 
-    // Use a function
+  // Use a function
   if (typeof redirect === 'function') {
     return redirect(host, port);
   }
 
-    // Name, without protocol
+  // Name, without protocol
   fullName = host + ':' + port.toString();
   if (redirect[fullName]) {
     return this.parseHostString(redirect[fullName]);
   }
 
-    // Name, with protocol
+  // Name, with protocol
   fullNameProtocol = 'kafka://' + host + ':' + port.toString();
   if (redirect[fullNameProtocol]) {
     return this.parseHostString(redirect[fullNameProtocol]);
@@ -339,11 +339,11 @@ Client.prototype.getTopicPartitions = function (topic) {
   }
 
   return self._waitTopicMetadata(topic)
-        .then(_try)
-        .catch({ code: 'UnknownTopicOrPartition', }, function () {
-          return self.updateTopicMetadata(topic).then(_try);
-        })
-        .then(_.values);
+    .then(_try)
+    .catch({ code: 'UnknownTopicOrPartition', }, function () {
+      return self.updateTopicMetadata(topic).then(_try);
+    })
+    .then(_.values);
 };
 
 Client.prototype.findLeader = function (topic, partition) {
@@ -361,10 +361,10 @@ Client.prototype.findLeader = function (topic, partition) {
   }
 
   return self._waitTopicMetadata(topic)
-        .then(_try)
-        .catch({ code: 'UnknownTopicOrPartition', }, { code: 'LeaderNotAvailable', }, function () {
-          return self.updateTopicMetadata(topic).then(_try);
-        });
+    .then(_try)
+    .catch({ code: 'UnknownTopicOrPartition', }, { code: 'LeaderNotAvailable', }, function () {
+      return self.updateTopicMetadata(topic).then(_try);
+    });
 };
 
 Client.prototype.leaderServer = function (leader) {
@@ -403,14 +403,14 @@ Client.prototype.produceRequest = function (requests, codec) {
 
   requests = _(requests).groupBy('leader').mapValues(function (v) {
     return _(v)
-            .groupBy('topic')
-            .map(function (p, t) {
-              return {
-                topicName: t,
-                partitions: _(p).groupBy('partition').map(processPartition).value(),
-              };
-            })
-            .value();
+      .groupBy('topic')
+      .map(function (p, t) {
+        return {
+          topicName: t,
+          partitions: _(p).groupBy('partition').map(processPartition).value(),
+        };
+      })
+      .value();
   }).value();
 
   return Promise.all(compressionPromises).then(function () {
@@ -430,17 +430,17 @@ Client.prototype.produceRequest = function (requests, codec) {
 
       return self.brokerConnections[leader].send(correlationId, buffer, self.options.requiredAcks === 0).then(function (responseBuffer) {
         if (self.options.requiredAcks !== 0) {
-                    // TODO: ThrottleTime is returned in V1 so we should change the return value soon
-                    // [ topics, throttleTime ] or { topics, throttleTime }
-                    // first one will allow to just use .spread instead of .then
-                    // second will be more generic but probably require more changes to the user code
+          // TODO: ThrottleTime is returned in V1 so we should change the return value soon
+          // [ topics, throttleTime ] or { topics, throttleTime }
+          // first one will allow to just use .spread instead of .then
+          // second will be more generic but probably require more changes to the user code
           return self.protocol.read(responseBuffer).ProduceResponse().result.topics;
         }
         return null;
       })
-            .catch(errors.NoKafkaConnectionError, function (err) {
-              return _fakeTopicsErrorResponse(topics, err);
-            });
+        .catch(errors.NoKafkaConnectionError, function (err) {
+          return _fakeTopicsErrorResponse(topics, err);
+        });
     }));
   })
     .then(_mapTopics);
@@ -451,7 +451,7 @@ Client.prototype.fetchRequest = function (requests) {
 
   return Promise.all(_.map(requests, function (topics, leader) {
     var buffer, correlationId = self.nextCorrelationId();
-        // fake LeaderNotAvailable for all topics with no leader
+    // fake LeaderNotAvailable for all topics with no leader
     if (leader === -1 || !self.brokerConnections[leader]) {
       return _fakeTopicsErrorResponse(topics, errors.byName('LeaderNotAvailable'));
     }
@@ -465,15 +465,15 @@ Client.prototype.fetchRequest = function (requests) {
     }).result;
 
     return self.brokerConnections[leader].send(correlationId, buffer).then(function (responseBuffer) {
-            // TODO: ThrottleTime is returned in V1 so we should change the return value soon
-            // [ topics, throttleTime ] or { topics, throttleTime }
-            // first one will allow to just use .spread instead of .then
-            // second will be more generic but probably require more changes to the user code
+      // TODO: ThrottleTime is returned in V1 so we should change the return value soon
+      // [ topics, throttleTime ] or { topics, throttleTime }
+      // first one will allow to just use .spread instead of .then
+      // second will be more generic but probably require more changes to the user code
       return self.protocol.read(responseBuffer).FetchResponse().result.topics;
     })
-        .catch(errors.NoKafkaConnectionError, function (err) {
-          return _fakeTopicsErrorResponse(topics, err);
-        });
+      .catch(errors.NoKafkaConnectionError, function (err) {
+        return _fakeTopicsErrorResponse(topics, err);
+      });
   }))
     .then(function (topics) {
       return Promise.map(_mapTopics(topics), function (r) {
@@ -486,9 +486,9 @@ Client.prototype.fetchRequest = function (requests) {
             self.error('Failed to decompress message at', r.topic + ':' + r.partition + '@' + m.offset, err);
           });
         })
-            .then(function (newMessageSet) {
-              return _.assign({}, r, { messageSet: _.flatten(newMessageSet), });
-            });
+          .then(function (newMessageSet) {
+            return _.assign({}, r, { messageSet: _.flatten(newMessageSet), });
+          });
       });
     });
 };

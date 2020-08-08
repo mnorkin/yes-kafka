@@ -32,8 +32,8 @@ Protocol.define('bytes', {
         value = Buffer.from(_(value).toString(), 'utf8');
       }
       this
-                .Int32BE(value.length)
-                .raw(value);
+        .Int32BE(value.length)
+        .raw(value);
     }
   },
 });
@@ -54,8 +54,8 @@ Protocol.define('string', {
     } else {
       value = Buffer.from(_(value).toString(), 'utf8');
       this
-                .Int16BE(value.length)
-                .raw(value);
+        .Int16BE(value.length)
+        .raw(value);
     }
   },
 });
@@ -77,8 +77,8 @@ Protocol.define('array', {
       this.Int32BE(-1);
     } else {
       this
-                .Int32BE(value.length)
-                .loop(value, fn);
+        .Int32BE(value.length)
+        .loop(value, fn);
     }
   },
 });
@@ -105,10 +105,10 @@ Protocol.define('KafkaOffset', {
 Protocol.define('RequestHeader', {
   write: function (header) {
     this
-            .Int16BE(header.apiKey)
-            .Int16BE(header.apiVersion)
-            .Int32BE(header.correlationId)
-            .string(header.clientId);
+      .Int16BE(header.apiKey)
+      .Int16BE(header.apiVersion)
+      .Int32BE(header.correlationId)
+      .string(header.clientId);
   },
 });
 
@@ -128,23 +128,23 @@ Protocol.define('MessageAttributes', {
 
 Protocol.define('Message', {
   read: function () {
-        // var _o1 = this.offset;
+    // var _o1 = this.offset;
     this
-            .Int32BE('crc')
-            .Int8('magicByte')
-            .MessageAttributes('attributes')
-            .bytes('key')
-            .bytes('value');
-        // crc32.signed(this.buffer.slice(_o1+4, this.offset));
+      .Int32BE('crc')
+      .Int8('magicByte')
+      .MessageAttributes('attributes')
+      .bytes('key')
+      .bytes('value');
+    // crc32.signed(this.buffer.slice(_o1+4, this.offset));
   },
   write: function (value) { // {attributes, magicByte, key, value}
     var _o1 = this.offset, _o2;
     this
-            .skip(4)
-            .Int8(value.magicByte || 0)
-            .MessageAttributes(value.attributes || {})
-            .bytes(value.key)
-            .bytes(value.value);
+      .skip(4)
+      .Int8(value.magicByte || 0)
+      .MessageAttributes(value.attributes || {})
+      .bytes(value.key)
+      .bytes(value.value);
 
     _o2 = this.offset;
     this.offset = _o1;
@@ -160,8 +160,8 @@ Protocol.define('MessageSetItem', {
       return end();
     }
     this
-            .KafkaOffset('offset')
-            .Int32BE('messageSize');
+      .KafkaOffset('offset')
+      .Int32BE('messageSize');
 
     if (size < 8 + 4 + this.context.messageSize) {
       this.skip(size - 8 - 4);
@@ -178,8 +178,8 @@ Protocol.define('MessageSetItem', {
     this.KafkaOffset(value.offset);
     _o1 = this.offset;
     this
-            .skip(4)
-            .Message(value.message);
+      .skip(4)
+      .Message(value.message);
     _o2 = this.offset;
     this.offset = _o1;
     this.Int32BE(_o2 - _o1 - 4);

@@ -20,15 +20,15 @@ describe('Connection', function () {
     producer = new Kafka.Producer({ requiredAcks: 0, clientId: 'producer', });
     consumer = new Kafka.SimpleConsumer({ idleTimeout: 100, clientId: 'simple-consumer', });
     return kafkaTestkit.createTopics([KAFKA_TOPIC,])
-        .then(function () {
-          return Promise.all([
-            producer.init(),
-            consumer.init(),
-          ]);
-        })
-        .then(function () {
-          return consumer.subscribe(KAFKA_TOPIC, 0, dataHandlerSpy);
-        });
+      .then(function () {
+        return Promise.all([
+          producer.init(),
+          consumer.init(),
+        ]);
+      })
+      .then(function () {
+        return consumer.subscribe(KAFKA_TOPIC, 0, dataHandlerSpy);
+      });
   });
 
   after(function () {
@@ -48,18 +48,18 @@ describe('Connection', function () {
       partition: 0,
       message: { value: buf, },
     })
-        .delay(300)
-        .then(function () {
+      .delay(300)
+      .then(function () {
             dataHandlerSpy.should.have.been.called; // eslint-disable-line
-          dataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
-          dataHandlerSpy.lastCall.args[1].should.be.a('string', KAFKA_TOPIC);
-          dataHandlerSpy.lastCall.args[2].should.be.a('number', 0);
+        dataHandlerSpy.lastCall.args[0].should.be.an('array').and.have.length(1);
+        dataHandlerSpy.lastCall.args[1].should.be.a('string', KAFKA_TOPIC);
+        dataHandlerSpy.lastCall.args[2].should.be.a('number', 0);
 
-          dataHandlerSpy.lastCall.args[0][0].should.be.an('object');
-          dataHandlerSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
-          dataHandlerSpy.lastCall.args[0][0].message.should.have.property('value');
-          crc32.signed(dataHandlerSpy.lastCall.args[0][0].message.value).should.be.eql(crc);
-        });
+        dataHandlerSpy.lastCall.args[0][0].should.be.an('object');
+        dataHandlerSpy.lastCall.args[0][0].should.have.property('message').that.is.an('object');
+        dataHandlerSpy.lastCall.args[0][0].message.should.have.property('value');
+        crc32.signed(dataHandlerSpy.lastCall.args[0][0].message.value).should.be.eql(crc);
+      });
   });
 
   it('should parse connection string with protocol', function () {

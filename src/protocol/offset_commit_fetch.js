@@ -15,31 +15,31 @@ var globals  = require('./globals');
 Protocol.define('OffsetCommitRequestV0PartitionItem', {
   write: function (data) { // { partition, offset, metadata }
     this
-            .Int32BE(data.partition)
-            .Int64BE(data.offset)
-            .string(data.metadata);
+      .Int32BE(data.partition)
+      .Int64BE(data.offset)
+      .string(data.metadata);
   },
 });
 
 Protocol.define('OffsetCommitRequestV0TopicItem', {
   write: function (data) { // { topicName, partitions }
     this
-            .string(data.topicName)
-            .array(data.partitions, this.OffsetCommitRequestV0PartitionItem);
+      .string(data.topicName)
+      .array(data.partitions, this.OffsetCommitRequestV0PartitionItem);
   },
 });
 
 Protocol.define('OffsetCommitRequestV0', {
   write: function (data) { // { groupId, topics }
     this
-            .RequestHeader({
-              apiKey: globals.API_KEYS.OffsetCommitRequest,
-              apiVersion: 0,
-              correlationId: data.correlationId,
-              clientId: data.clientId,
-            })
-            .string(data.groupId)
-            .array(data.topics, this.OffsetCommitRequestV0TopicItem);
+      .RequestHeader({
+        apiKey: globals.API_KEYS.OffsetCommitRequest,
+        apiVersion: 0,
+        correlationId: data.correlationId,
+        clientId: data.clientId,
+      })
+      .string(data.groupId)
+      .array(data.topics, this.OffsetCommitRequestV0TopicItem);
   },
 });
 
@@ -48,10 +48,10 @@ Protocol.define('OffsetCommitRequestV0', {
 Protocol.define('OffsetCommitRequestV1PartitionItem', {
   write: function (data) { // { partition, offset, timestamp, metadata }
     this
-            .Int32BE(data.partition)
-            .Int64BE(data.offset)
-            .Int64BE(data.timestamp)
-            .string(data.metadata);
+      .Int32BE(data.partition)
+      .Int64BE(data.offset)
+      .Int64BE(data.timestamp)
+      .string(data.metadata);
   },
 });
 
@@ -59,8 +59,8 @@ Protocol.define('OffsetCommitRequestV1PartitionItem', {
 Protocol.define('OffsetCommitRequestV1TopicItem', {
   write: function (data) { // { topicName, partitions }
     this
-            .string(data.topicName)
-            .array(data.partitions, this.OffsetCommitRequestV1PartitionItem);
+      .string(data.topicName)
+      .array(data.partitions, this.OffsetCommitRequestV1PartitionItem);
   },
 });
 
@@ -68,16 +68,16 @@ Protocol.define('OffsetCommitRequestV1TopicItem', {
 Protocol.define('OffsetCommitRequestV1', {
   write: function (data) { // { groupId, generationId, memberId,  topics }
     this
-            .RequestHeader({
-              apiKey: globals.API_KEYS.OffsetCommitRequest,
-              apiVersion: 1,
-              correlationId: data.correlationId,
-              clientId: data.clientId,
-            })
-            .string(data.groupId)
-            .string(data.generationId)
-            .string(data.memberId)
-            .array(data.topics, this.OffsetCommitRequestV1TopicItem);
+      .RequestHeader({
+        apiKey: globals.API_KEYS.OffsetCommitRequest,
+        apiVersion: 1,
+        correlationId: data.correlationId,
+        clientId: data.clientId,
+      })
+      .string(data.groupId)
+      .string(data.generationId)
+      .string(data.memberId)
+      .array(data.topics, this.OffsetCommitRequestV1TopicItem);
   },
 });
 
@@ -85,17 +85,17 @@ Protocol.define('OffsetCommitRequestV1', {
 Protocol.define('OffsetCommitRequestV2', {
   write: function (data) { // { groupId, generationId, memberId, retentionTime, topics }
     this
-            .RequestHeader({
-              apiKey: globals.API_KEYS.OffsetCommitRequest,
-              apiVersion: 2,
-              correlationId: data.correlationId,
-              clientId: data.clientId,
-            })
-            .string(data.groupId)
-            .Int32BE(data.generationId)
-            .string(data.memberId)
-            .Int64BE(data.retentionTime)
-            .array(data.topics, this.OffsetCommitRequestV0TopicItem); // same as in v0
+      .RequestHeader({
+        apiKey: globals.API_KEYS.OffsetCommitRequest,
+        apiVersion: 2,
+        correlationId: data.correlationId,
+        clientId: data.clientId,
+      })
+      .string(data.groupId)
+      .Int32BE(data.generationId)
+      .string(data.memberId)
+      .Int64BE(data.retentionTime)
+      .array(data.topics, this.OffsetCommitRequestV0TopicItem); // same as in v0
   },
 });
 
@@ -103,16 +103,16 @@ Protocol.define('OffsetCommitRequestV2', {
 Protocol.define('OffsetCommitResponseTopicItem', {
   read: function () {
     this
-            .string('topicName')
-            .array('partitions', this.OffsetCommitResponsePartitionItem);
+      .string('topicName')
+      .array('partitions', this.OffsetCommitResponsePartitionItem);
   },
 });
 
 Protocol.define('OffsetCommitResponsePartitionItem', {
   read: function () {
     this
-            .Int32BE('partition')
-            .ErrorCode('error');
+      .Int32BE('partition')
+      .ErrorCode('error');
   },
 });
 
@@ -120,8 +120,8 @@ Protocol.define('OffsetCommitResponsePartitionItem', {
 Protocol.define('OffsetCommitResponse', {
   read: function () {
     this
-            .Int32BE('correlationId')
-            .array('topics', this.OffsetCommitResponseTopicItem);
+      .Int32BE('correlationId')
+      .array('topics', this.OffsetCommitResponseTopicItem);
   },
 });
 
@@ -129,47 +129,47 @@ Protocol.define('OffsetCommitResponse', {
 Protocol.define('OffsetFetchRequestTopicItem', {
   write: function (data) { // { topicName, partitions }
     this
-            .string(data.topicName)
-            .array(data.partitions, this.Int32BE);
+      .string(data.topicName)
+      .array(data.partitions, this.Int32BE);
   },
 });
 
 Protocol.define('OffsetFetchRequest', {
   write: function (data) { // { apiVersion, groupId, topics }
     this
-            .RequestHeader({
-              apiKey: globals.API_KEYS.OffsetFetchRequest,
-              apiVersion: data.apiVersion || 0,
-              correlationId: data.correlationId,
-              clientId: data.clientId,
-            })
-            .string(data.groupId)
-            .array(data.topics, this.OffsetFetchRequestTopicItem);
+      .RequestHeader({
+        apiKey: globals.API_KEYS.OffsetFetchRequest,
+        apiVersion: data.apiVersion || 0,
+        correlationId: data.correlationId,
+        clientId: data.clientId,
+      })
+      .string(data.groupId)
+      .array(data.topics, this.OffsetFetchRequestTopicItem);
   },
 });
 
 Protocol.define('OffsetFetchResponseTopicItem', {
   read: function () {
     this
-            .string('topicName')
-            .array('partitions', this.OffsetFetchResponsePartitionItem);
+      .string('topicName')
+      .array('partitions', this.OffsetFetchResponsePartitionItem);
   },
 });
 
 Protocol.define('OffsetFetchResponsePartitionItem', {
   read: function () {
     this
-            .Int32BE('partition')
-            .KafkaOffset('offset')
-            .string('metadata')
-            .ErrorCode('error');
+      .Int32BE('partition')
+      .KafkaOffset('offset')
+      .string('metadata')
+      .ErrorCode('error');
   },
 });
 
 Protocol.define('OffsetFetchResponse', {
   read: function () {
     this
-            .Int32BE('correlationId')
-            .array('topics', this.OffsetFetchResponseTopicItem);
+      .Int32BE('correlationId')
+      .array('topics', this.OffsetFetchResponseTopicItem);
   },
 });

@@ -54,7 +54,7 @@ GroupAdmin.prototype.fetchConsumerLag = function (groupId, offsetFetchRequestArg
     var i, j, res;
     var responses = [];
 
-        // Match the returned data into a coherent response
+    // Match the returned data into a coherent response
     for (i = 0; i < offsets.length; i++) {
       res = {
         topic: offsets[i].topic,
@@ -66,9 +66,9 @@ GroupAdmin.prototype.fetchConsumerLag = function (groupId, offsetFetchRequestArg
 
       for (j = 0; j < highWaterMark.length; j++) {
         if (
-                    offsets[i].topic === highWaterMark[j].topic
+          offsets[i].topic === highWaterMark[j].topic
                     && offsets[i].partition === highWaterMark[j].partition
-                ) {
+        ) {
           res.highwaterMark = highWaterMark[j].highWaterMark;
           if (res.offset > 0 && res.highwaterMark > 0) {
             res.consumerLag = res.highwaterMark - res.offset;
@@ -93,8 +93,8 @@ GroupAdmin.prototype._fetchHighWaterMark = function (offsetFetchRequestArgs) {
 
     for (j = 0; j < topicPartitions.length; j++) {
       offsetRequestsPromises.push(
-                this._fetchHighWaterMarkOffset(topicName, topicPartitions[j])
-            );
+        this._fetchHighWaterMarkOffset(topicName, topicPartitions[j])
+      );
     }
   }
 

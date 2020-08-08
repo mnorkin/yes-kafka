@@ -26,15 +26,15 @@ Snappy = snappy ? {
   _chunks: function (buffer) {
     var offset = 16, size, chunks = [];
     if (buffer.toString('hex', 0, 8) === SNAPPY_MAGIC_HEADER.toString('hex')) {
-            // var defaultVersion = buffer.readUInt32BE(offset); offset += 4;
-            // var minimumVersion = buffer.readUInt32BE(offset); offset += 4;
+      // var defaultVersion = buffer.readUInt32BE(offset); offset += 4;
+      // var minimumVersion = buffer.readUInt32BE(offset); offset += 4;
       while (offset < buffer.length) {
         size = buffer.readUInt32BE(offset); offset += 4;
         chunks.push(buffer.slice(offset, offset + size));
         offset += size;
       }
     } else {
-            /* istanbul ignore next */
+      /* istanbul ignore next */
       chunks = [buffer,];
     }
     return chunks;
@@ -75,7 +75,7 @@ module.exports = {
     } else if (codec === 1 && typeof zlib.gunzipSync === 'function') {
       return Promise.resolve(Gzip.decompress(buffer));
     }
-        /* istanbul ignore next */
+    /* istanbul ignore next */
     return Promise.reject(new Error('Unsupported compression codec ' + codec));
   },
   decompressAsync: function (buffer, codec) {
@@ -87,7 +87,7 @@ module.exports = {
     } else if (codec === 1) {
       return Gzip.decompressAsync(buffer);
     }
-        /* istanbul ignore next */
+    /* istanbul ignore next */
     return Promise.reject(new Error('Unsupported compression codec ' + codec));
   },
   compress: function (buffer, codec) {

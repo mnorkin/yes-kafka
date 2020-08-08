@@ -17,7 +17,7 @@ function Connection(options) {
     ssl: {},
   });
 
-    // internal state
+  // internal state
   this.connected = false;
   this.closed = false; // raised if close() was called
   this.buffer = Buffer.alloc(this.options.initialBufferSize);
@@ -91,9 +91,9 @@ Connection.prototype.connect = function () {
       self.socket.on('data', self._receive.bind(self));
     }),
   ])
-  .finally(function () {
-    self.connecting = false;
-  });
+    .finally(function () {
+      self.connecting = false;
+    });
 
   return self.connecting;
 };

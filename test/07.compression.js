@@ -176,9 +176,9 @@ describe('Compression', function () {
           consumer.init(),
         ]);
       })
-      .then(function () {
-        return consumer.subscribe(KAFKA_TOPIC, 0, dataHandlerSpy);
-      });
+        .then(function () {
+          return consumer.subscribe(KAFKA_TOPIC, 0, dataHandlerSpy);
+        });
     });
 
     after(async () => {
