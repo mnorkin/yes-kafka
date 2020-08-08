@@ -42,10 +42,10 @@ describe('GroupAdmin', function () {
 
   it('required methods', function () {
     return admin.should
-            .respondTo('init')
-            .respondTo('listGroups')
-            .respondTo('describeGroup')
-            .respondTo('end');
+      .respondTo('init')
+      .respondTo('listGroups')
+      .respondTo('describeGroup')
+      .respondTo('end');
   });
 
   it('should list groups', function () {
@@ -122,8 +122,8 @@ describe('GroupAdmin', function () {
     return new Promise(function (resolve) {
       Promise.all([
         admin.init(),
-                // Produce and consume a message in order to set
-                // the current offset for partition 0
+        // Produce and consume a message in order to set
+        // the current offset for partition 0
         consumer.init({
           subscriptions: ['kafka-admin-topic-2',],
           metadata: 'consumer-metadata',
@@ -136,11 +136,11 @@ describe('GroupAdmin', function () {
                   offset: m.offset,
                 })
             }))
-            .then(function () {
-                            // All messages consumed,
-                            // expecting lag to be 0 at this point
-              resolve();
-            });
+              .then(function () {
+                // All messages consumed,
+                // expecting lag to be 0 at this point
+                resolve();
+              });
           },
         }),
         producer.init(),

@@ -46,14 +46,14 @@ SimpleConsumer.prototype._prepareOffsetRequest = function (type, commits) {
     .then(function () {
       return _(commits).groupBy('leader').mapValues(function (v) {
         return _(v)
-                .groupBy('topic')
-                .map(function (p, t) {
-                  return {
-                    topicName: t,
-                    partitions: type === 'fetch' ? _.map(p, 'partition') : p,
-                  };
-                })
-                .value();
+          .groupBy('topic')
+          .map(function (p, t) {
+            return {
+              topicName: t,
+              partitions: type === 'fetch' ? _.map(p, 'partition') : p,
+            };
+          })
+          .value();
       }).value();
     });
 };

@@ -21,28 +21,28 @@ const string_decoder_1 = require('string_decoder'); // eslint-disable-line
  */
 exports.pullImageAsync = function (dockerode, imageName, onProgress) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () { // eslint-disable-line
-      const imageNameWithTag = (imageName.indexOf(':') > 0)
-            ? imageName
-            : `${imageName}:latest`;
-      if (yield exports.imageExists(dockerode, imageNameWithTag)) {
-        return dockerode.getImage(imageNameWithTag);
+    const imageNameWithTag = (imageName.indexOf(':') > 0)
+      ? imageName
+      : `${imageName}:latest`;
+    if (yield exports.imageExists(dockerode, imageNameWithTag)) {
+      return dockerode.getImage(imageNameWithTag);
+    }
+    dockerode.pull(imageNameWithTag, (pullError, stream) => {
+      if (pullError) {
+        reject(pullError);
       }
-      dockerode.pull(imageNameWithTag, (pullError, stream) => {
-        if (pullError) {
-          reject(pullError);
+      if (!stream) {
+        throw new Error(`Image '${imageNameWithTag}' doesn't exists`);
+      }
+      dockerode.modem.followProgress(stream, (error) => {
+        // onFinished
+        if (error) {
+          reject(error);
         }
-        if (!stream) {
-          throw new Error(`Image '${imageNameWithTag}' doesn't exists`);
-        }
-        dockerode.modem.followProgress(stream, (error) => {
-                // onFinished
-          if (error) {
-            reject(error);
-          }
-          resolve(dockerode.getImage(imageNameWithTag));
-        }, onProgress);
-      });
-    }));
+        resolve(dockerode.getImage(imageNameWithTag));
+      }, onProgress);
+    });
+  }));
 };
 /**
  * Execute command inside a container and get output from it, if you need
@@ -51,7 +51,7 @@ exports.pullImageAsync = function (dockerode, imageName, onProgress) {
  * @returns result
  */
 exports.containerExec = function (container, cmd) {
-    // TODO: add detach (don't use stream nor wait for output) options. Useful for daemons
+  // TODO: add detach (don't use stream nor wait for output) options. Useful for daemons
   return new Promise((resolve, error) => {
     container.exec({ Cmd: cmd, AttachStdout: true, AttachStderr: true, }, (cErr, exec) => {
       if (cErr) {
@@ -114,8 +114,8 @@ exports.waitForOutput = function (_container, predicate) {
  */
 exports.imageExists = (dockerode, imageNames) => __awaiter(this, void 0, void 0, function* () {
   const imageNamesArr = (typeof imageNames === 'string')
-        ? [imageNames,]
-        : imageNames;
+    ? [imageNames,]
+    : imageNames;
   const images = yield dockerode.listImages({ filters: { reference: imageNamesArr, }, });
   return (images.length > 0);
 });

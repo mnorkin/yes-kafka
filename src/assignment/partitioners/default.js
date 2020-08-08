@@ -29,8 +29,8 @@ DefaultPartitioner.prototype.getAndIncrement = function () {
 };
 
 DefaultPartitioner.prototype.hashKey = function (key) {
-    // Must convert to buffer before hashing due to issue with unicode
-    // https://github.com/b3nj4m/murmurhash-js/pull/1
+  // Must convert to buffer before hashing due to issue with unicode
+  // https://github.com/b3nj4m/murmurhash-js/pull/1
   var buf = Buffer.isBuffer(key) ? key : Buffer(key);
 
   return murmur2(buf, SEED);
@@ -43,12 +43,12 @@ DefaultPartitioner.prototype.getKey = function (message) {
 DefaultPartitioner.prototype.partition = function (topicName, partitions, message) {
   var key = this.getKey(message);
 
-    // Round-robin partitioner
+  // Round-robin partitioner
   if (key === undefined || key === null) {
     return toPositive(this.getAndIncrement()) % partitions.length;
   }
 
-    // Hash partitioner
+  // Hash partitioner
   return toPositive(this.hashKey(key)) % partitions.length;
 };
 

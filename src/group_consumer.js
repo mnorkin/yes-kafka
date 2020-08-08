@@ -90,11 +90,11 @@ GroupConsumer.prototype._joinGroup = function () {
     }
 
     return self.client.joinConsumerGroupRequest(self.options.groupId, self.memberId, self.options.sessionTimeout, _.values(self.strategies))
-        .catch({ code: 'GroupCoordinatorNotAvailable', }, function () {
-          return Promise.delay(1000).then(function () {
-            return _tryJoinGroup(++attempt);
-          });
+      .catch({ code: 'GroupCoordinatorNotAvailable', }, function () {
+        return Promise.delay(1000).then(function () {
+          return _tryJoinGroup(++attempt);
         });
+      });
   }())
     .then(function (response) {
       if (self.memberId) {
@@ -181,11 +181,11 @@ GroupConsumer.prototype._rejoin = function () {
     return self._joinGroup().then(function () {
       return self._syncGroup();
     })
-        .catch({ code: 'RebalanceInProgress', }, function () {
-          return Promise.delay(1000).then(function () {
-            return _tryRebalance(++attempt);
-          });
+      .catch({ code: 'RebalanceInProgress', }, function () {
+        return Promise.delay(1000).then(function () {
+          return _tryRebalance(++attempt);
         });
+      });
   }());
 };
 
@@ -199,10 +199,10 @@ GroupConsumer.prototype._fullRejoin = function () {
         return self._rejoin(); // rejoin and sync with received memberId
       });
     })
-        .catch(function (err) {
-          self.client.error('Full rejoin attempt failed:', JSON.stringify(err));
-          return Promise.delay(1000).then(_tryFullRejoin);
-        });
+      .catch(function (err) {
+        self.client.error('Full rejoin attempt failed:', JSON.stringify(err));
+        return Promise.delay(1000).then(_tryFullRejoin);
+      });
   }())
     .tap(function () {
       self._heartbeatPromise = self._heartbeat(); // start sending heartbeats
@@ -215,7 +215,7 @@ GroupConsumer.prototype._heartbeat = function () {
 
   return self.client.heartbeatRequest(self.options.groupId, self.memberId, self.generationId)
     .catch({ code: 'RebalanceInProgress', }, function () {
-        // new group member has joined or existing member has left
+      // new group member has joined or existing member has left
       self.client.log('Rejoining group on RebalanceInProgress');
       return self._rejoin();
     })
@@ -225,8 +225,8 @@ GroupConsumer.prototype._heartbeat = function () {
       }, self.options.heartbeatTimeout);
     })
     .catch(function (err) {
-        // some severe error, such as GroupCoordinatorNotAvailable or network error
-        // in this case we should start trying to rejoin from scratch
+      // some severe error, such as GroupCoordinatorNotAvailable or network error
+      // in this case we should start trying to rejoin from scratch
       self.client.error('Sending heartbeat failed: ', err);
       return self._fullRejoin().catch(function (_err) {
         self.client.error(_err);
@@ -309,7 +309,7 @@ GroupConsumer.prototype._updateSubscriptions = function (partitionAssignment) {
     return self.client.warn('No partition assignment received');
   }
 
-    // should probably wait for current fetch/handlers to finish before fetching offsets and re-subscribing
+  // should probably wait for current fetch/handlers to finish before fetching offsets and re-subscribing
 
   _.each(partitionAssignment, function (a) {
     _.each(a.partitions, function (p) {

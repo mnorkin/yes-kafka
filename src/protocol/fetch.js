@@ -14,52 +14,52 @@ var _        = require('lodash');
 Protocol.define('FetchRequestPartitionItem', {
   write: function (data) { // {partition, offset, maxBytes}
     this
-            .Int32BE(data.partition)
-            .KafkaOffset(data.offset)
-            .Int32BE(data.maxBytes);
+      .Int32BE(data.partition)
+      .KafkaOffset(data.offset)
+      .Int32BE(data.maxBytes);
   },
 });
 
 Protocol.define('FetchRequestTopicItem', {
   write: function (data) { // {topicName, partitions}
     this
-            .string(data.topicName)
-            .array(data.partitions, this.FetchRequestPartitionItem);
+      .string(data.topicName)
+      .array(data.partitions, this.FetchRequestPartitionItem);
   },
 });
 
 Protocol.define('FetchRequest', {
   write: function (data) { // { maxWaitTime, minBytes, topics }
     this
-            .RequestHeader({
-              apiKey: globals.API_KEYS.FetchRequest,
-              apiVersion: 0,
-              correlationId: data.correlationId,
-              clientId: data.clientId,
-            })
-            .Int32BE(data.replicaId || -1) // ReplicaId
-            .Int32BE(data.maxWaitTime)
-            .Int32BE(data.minBytes)
-            .array(data.topics, this.FetchRequestTopicItem);
+      .RequestHeader({
+        apiKey: globals.API_KEYS.FetchRequest,
+        apiVersion: 0,
+        correlationId: data.correlationId,
+        clientId: data.clientId,
+      })
+      .Int32BE(data.replicaId || -1) // ReplicaId
+      .Int32BE(data.maxWaitTime)
+      .Int32BE(data.minBytes)
+      .array(data.topics, this.FetchRequestTopicItem);
   },
 });
 
 Protocol.define('FetchResponseTopicItem', {
   read: function () {
     this
-            .string('topicName')
-            .array('partitions', this.FetchResponsePartitionItem);
+      .string('topicName')
+      .array('partitions', this.FetchResponsePartitionItem);
   },
 });
 
 Protocol.define('FetchResponsePartitionItem', {
   read: function () {
     this
-            .Int32BE('partition')
-            .ErrorCode('error')
-            .KafkaOffset('highwaterMarkOffset')
-            .Int32BE('messageSetSize')
-            .MessageSet('messageSet', this.context.messageSetSize);
+      .Int32BE('partition')
+      .ErrorCode('error')
+      .KafkaOffset('highwaterMarkOffset')
+      .Int32BE('messageSetSize')
+      .MessageSet('messageSet', this.context.messageSetSize);
 
     if (this.context.messageSet.length === 1 && this.context.messageSet[0]._partial === true) {
       this.context.messageSetSize = 0;
@@ -74,8 +74,8 @@ Protocol.define('FetchResponsePartitionItem', {
 Protocol.define('FetchResponse', {
   read: function () {
     this
-            .Int32BE('correlationId')
-            // .Int32BE('throttleTime')
-            .array('topics', this.FetchResponseTopicItem);
+      .Int32BE('correlationId')
+    // .Int32BE('throttleTime')
+      .array('topics', this.FetchResponseTopicItem);
   },
 });

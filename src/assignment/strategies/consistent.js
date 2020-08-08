@@ -24,7 +24,7 @@ ConsistentAssignmentStrategy.prototype.assignment = function (subscriptions) { /
           weight: m.weight || 50,
         };
       } else {
-                // ConsistentAssignmentStrategy requires {id, weight} object in metadata each member
+        // ConsistentAssignmentStrategy requires {id, weight} object in metadata each member
         members[member.id] = {
           _id: member.id,
         };

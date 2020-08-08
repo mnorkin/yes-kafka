@@ -13,11 +13,11 @@ module.exports = (function () {
   exports.ConsistentAssignmentStrategy = require('./assignment/strategies/consistent');
   exports.WeightedRoundRobinAssignmentStrategy = require('./assignment/strategies/weighted_round_robin');
 
-    // offset request time constants
+  // offset request time constants
   exports.EARLIEST_OFFSET = -2;
   exports.LATEST_OFFSET = -1;
 
-    // compression codecs
+  // compression codecs
   exports.COMPRESSION_SNAPPY = 2;
   exports.COMPRESSION_GZIP = 1;
   exports.COMPRESSION_NONE = 0;
